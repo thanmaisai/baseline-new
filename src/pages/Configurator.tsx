@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ArrowLeft, ArrowRight, Download, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download, Check, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,6 +10,8 @@ import { tools } from '@/data/tools';
 import { Tool, Selection, ToolCategory } from '@/types/tools';
 import { generateSetupScript } from '@/utils/scriptGenerator';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
 
 const steps = [
   { id: 'applications', name: 'Applications', description: 'GUI apps' },
@@ -86,7 +88,15 @@ const Configurator = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    toast.success('Setup script downloaded!', {
+    // Celebration!
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#5B8DEF', '#7B68EE', '#9B59B6'],
+    });
+    
+    toast.success('🎉 Setup script downloaded!', {
       description: 'Run it with: bash setup-macos.sh',
     });
   };
@@ -96,124 +106,209 @@ const Configurator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/30 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[image:var(--gradient-mesh)] opacity-20" />
+      
+      <header className="border-b bg-background/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <button
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
               Back to Home
-            </button>
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              DevEnv Setup
-            </h1>
-            <div className="w-24" /> {/* Spacer */}
+            </motion.button>
+            <motion.h1
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-xl font-bold gradient-text"
+            >
+              Mac Setup Genie
+            </motion.h1>
+            <div className="w-28" /> {/* Spacer */}
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
-        <ProgressBar steps={steps} currentStep={currentStep} />
+      <main className="container mx-auto px-4 py-8 max-w-6xl relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ProgressBar steps={steps} currentStep={currentStep} />
+        </motion.div>
 
-        {currentCategory !== 'review' ? (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-2">{steps[currentStep].name}</h2>
-              <p className="text-muted-foreground">{steps[currentStep].description}</p>
-            </div>
+        <AnimatePresence mode="wait">
+          {currentCategory !== 'review' ? (
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Step {currentStep + 1} of {steps.length}</span>
+                </div>
+                <h2 className="text-4xl font-bold mb-3">{steps[currentStep].name}</h2>
+                <p className="text-lg text-muted-foreground">{steps[currentStep].description}</p>
+              </div>
 
-            <div className="max-w-md mx-auto">
-              <SearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder={`Search ${steps[currentStep].name.toLowerCase()}...`}
-              />
-            </div>
-
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {filteredTools.map(tool => (
-                <ToolCard
-                  key={tool.id}
-                  tool={tool}
-                  selected={isToolSelected(tool)}
-                  onToggle={() => toggleTool(tool)}
+              <div className="max-w-md mx-auto">
+                <SearchBar
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder={`Search ${steps[currentStep].name.toLowerCase()}...`}
                 />
-              ))}
-            </div>
-
-            {filteredTools.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No tools found matching "{searchQuery}"</p>
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-2">Review Your Setup</h2>
-              <p className="text-muted-foreground">
-                {selection.tools.length} tool{selection.tools.length !== 1 ? 's' : ''} selected
-              </p>
-            </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              {(['applications', 'package-managers', 'devops', 'cli-tools'] as ToolCategory[]).map(category => {
-                const categoryTools = selectedByCategory(category);
-                if (categoryTools.length === 0) return null;
+              <motion.div
+                layout
+                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+              >
+                {filteredTools.map((tool, index) => (
+                  <motion.div
+                    key={tool.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.3 }}
+                  >
+                    <ToolCard
+                      tool={tool}
+                      selected={isToolSelected(tool)}
+                      onToggle={() => toggleTool(tool)}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
 
-                return (
-                  <Card key={category} className="p-6">
-                    <h3 className="font-semibold mb-4 text-lg capitalize">
-                      {category.replace('-', ' ')}
-                    </h3>
-                    <ul className="space-y-2">
-                      {categoryTools.map(tool => (
-                        <li key={tool.id} className="flex items-center gap-2 text-sm">
-                          <Check className="h-4 w-4 text-accent" />
-                          <span>{tool.name}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </Card>
-                );
-              })}
-            </div>
-
-            {selection.tools.length > 0 && (
-              <div className="flex justify-center pt-6">
-                <Button
-                  size="lg"
-                  onClick={handleDownloadScript}
-                  className="bg-gradient-primary hover:opacity-90 shadow-hover"
+              {filteredTools.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-20"
                 >
-                  <Download className="mr-2 h-5 w-5" />
-                  Download Setup Script
-                </Button>
+                  <p className="text-muted-foreground text-lg">No tools found matching "{searchQuery}"</p>
+                </motion.div>
+              )}
+            </motion.div>
+            ) : (
+            <motion.div
+              key="review"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-6"
+            >
+              <div className="text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", delay: 0.2 }}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-primary text-white mb-6 shadow-lg"
+                >
+                  <Check className="w-5 h-5" />
+                  <span className="font-semibold">{selection.tools.length} tools selected</span>
+                </motion.div>
+                <h2 className="text-4xl font-bold mb-3">Review Your Setup</h2>
+                <p className="text-lg text-muted-foreground">
+                  Everything looks good? Download your custom installation script
+                </p>
               </div>
-            )}
-          </div>
-        )}
 
-        <div className="flex justify-between mt-12 pt-6 border-t">
+              <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+                {(['applications', 'package-managers', 'devops', 'cli-tools'] as ToolCategory[]).map((category, catIndex) => {
+                  const categoryTools = selectedByCategory(category);
+                  if (categoryTools.length === 0) return null;
+
+                  return (
+                    <motion.div
+                      key={category}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: catIndex * 0.1 }}
+                    >
+                      <Card className="p-6 hover-lift border-2 bg-card/50 backdrop-blur-sm">
+                        <h3 className="font-bold mb-4 text-xl capitalize flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-primary" />
+                          {category.replace('-', ' ')}
+                        </h3>
+                        <ul className="space-y-3">
+                          {categoryTools.map(tool => (
+                            <motion.li
+                              key={tool.id}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              className="flex items-center gap-3 text-sm"
+                            >
+                              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                <Check className="h-3 w-3 text-primary" />
+                              </div>
+                              <span className="font-medium">{tool.name}</span>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {selection.tools.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="flex justify-center pt-6"
+                >
+                  <Button
+                    size="lg"
+                    onClick={handleDownloadScript}
+                    className="bg-gradient-primary hover:opacity-90 shadow-xl hover:shadow-2xl transition-all duration-300 text-lg h-16 px-12 group"
+                  >
+                    <Download className="mr-2 h-6 w-6 group-hover:animate-bounce" />
+                    Download Setup Script
+                  </Button>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="flex justify-between mt-12 pt-6 border-t"
+        >
           <Button
             variant="outline"
             onClick={handleBack}
             disabled={currentStep === 0}
+            className="border-2 hover:border-primary/50 transition-all"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
 
           {currentStep < steps.length - 1 && (
-            <Button onClick={handleNext}>
+            <Button 
+              onClick={handleNext}
+              className="bg-gradient-primary hover:opacity-90 shadow-lg"
+            >
               Next
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
-        </div>
+        </motion.div>
       </main>
     </div>
   );

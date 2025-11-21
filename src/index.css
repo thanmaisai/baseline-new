@@ -2,52 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ProductHunt-worthy Premium Design System */
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 210 20% 12%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 20% 12%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 20% 12%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 205 90% 30%;
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
     
-    --primary-glow: 190 80% 45%;
+    --primary-glow: 217 91% 60%;
 
-    --secondary: 210 25% 95%;
-    --secondary-foreground: 210 20% 12%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 25% 96%;
-    --muted-foreground: 210 12% 45%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 175 70% 42%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 205 90% 30%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     
-    --gradient-primary: linear-gradient(135deg, hsl(205 90% 30%), hsl(190 80% 45%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 25% 98%));
-    --gradient-hero: linear-gradient(135deg, hsl(205 90% 28%) 0%, hsl(190 80% 42%) 50%, hsl(175 70% 40%) 100%);
+    /* Modern Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(217 91% 60%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(250 100% 71%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(221 83% 53% / 0.3) 0px, transparent 50%),
+                     radial-gradient(at 80% 0%, hsl(217 91% 60% / 0.2) 0px, transparent 50%),
+                     radial-gradient(at 0% 50%, hsl(250 100% 71% / 0.2) 0px, transparent 50%);
     
-    --shadow-card: 0 4px 20px -4px hsl(205 90% 30% / 0.08);
-    --shadow-hover: 0 8px 30px -6px hsl(205 90% 30% / 0.15);
+    /* Premium Shadows */
+    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-hover: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-glow: 0 0 20px hsl(221 83% 53% / 0.3);
     
+    /* Smooth Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -67,42 +73,46 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 210 30% 8%;
-    --foreground: 210 20% 98%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
 
-    --card: 210 25% 10%;
-    --card-foreground: 210 20% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 210 25% 10%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 190 80% 45%;
-    --primary-foreground: 210 30% 8%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
     
-    --primary-glow: 190 80% 55%;
+    --primary-glow: 250 100% 71%;
 
-    --secondary: 210 20% 15%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 20% 15%;
-    --muted-foreground: 210 15% 60%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 175 70% 42%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 210 20% 18%;
-    --input: 210 20% 18%;
-    --ring: 190 80% 45%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 224 76% 48%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(190 80% 45%), hsl(175 70% 42%));
-    --gradient-subtle: linear-gradient(180deg, hsl(210 30% 8%), hsl(210 25% 10%));
-    --gradient-hero: linear-gradient(135deg, hsl(205 90% 25%) 0%, hsl(190 80% 35%) 50%, hsl(175 70% 35%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(250 100% 71%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(250 100% 71%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(222 47% 11%) 0%, hsl(217 33% 17%) 100%);
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(217 91% 60% / 0.2) 0px, transparent 50%),
+                     radial-gradient(at 80% 0%, hsl(250 100% 71% / 0.15) 0px, transparent 50%),
+                     radial-gradient(at 0% 50%, hsl(221 83% 53% / 0.15) 0px, transparent 50%);
     
-    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.3);
-    --shadow-hover: 0 8px 30px -6px hsl(0 0% 0% / 0.4);
+    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.5), 0 1px 2px -1px rgb(0 0 0 / 0.5);
+    --shadow-hover: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+    --shadow-glow: 0 0 30px hsl(217 91% 60% / 0.4);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -120,6 +130,38 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' 32;
   }
 }
+
+/* Premium Utility Classes */
+@layer utilities {
+  .glass-card {
+    @apply backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border border-white/20 dark:border-gray-800/50;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent;
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+  
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-hover;
+  }
+  
+  .glow {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
