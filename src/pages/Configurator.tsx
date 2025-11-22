@@ -659,43 +659,74 @@ const Configurator = () => {
         </AnimatePresence>
 
         {/* Bottom Control Bar (Floating) */}
-        <div className="fixed bottom-6 left-0 right-0 max-w-7xl mx-auto px-6 lg:px-12 flex justify-between items-end pointer-events-none">
-          {/* Live Log */}
-          <div className="font-mono text-xs text-muted-foreground bg-background/80 backdrop-blur border border-border px-4 py-2 rounded-lg flex items-center gap-2 pointer-events-auto min-w-[300px] shadow-lg">
-            <span className="text-green-400">➜</span>
-            <span className="flex-1">{liveLog}</span>
-            <span className="w-1.5 h-3 bg-muted-foreground/40 ml-auto animate-pulse" />
-          </div>
-
-          <div className="flex items-center gap-4 pointer-events-auto">
+        <motion.div 
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ 
+            y: 0, 
+            opacity: 1,
+            marginLeft: sidebarCollapsed ? '72px' : '260px'
+          }}
+          transition={{ 
+            y: { delay: 0.3 },
+            opacity: { delay: 0.3 },
+            marginLeft: { duration: 0.3, ease: 'easeInOut' }
+          }}
+          className="fixed bottom-8 left-0 right-0 z-50 px-8"
+        >
+          <div className="max-w-[1600px] mx-auto">
+            <div className="bg-background/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl p-5 flex items-center justify-between gap-4">
+            {/* Left: Home Button */}
             <Button
-              onClick={handleBack}
-              disabled={currentStep === 0}
-              variant="outline"
-              className="px-6 py-3 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-all disabled:opacity-0 disabled:pointer-events-none flex items-center gap-2"
+              onClick={() => navigate('/')}
+              variant="ghost"
+              className="gap-2 text-muted-foreground hover:text-foreground"
             >
-              Back
+              <ArrowLeft className="h-4 w-4" />
+              Home
             </Button>
 
-            {currentStep < steps.length - 1 && (
-              <Button
-                onClick={handleNext}
-                className="pl-8 pr-6 py-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg flex items-center gap-3 group"
-              >
-                <span>Next Step</span>
-                <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
-                  <span className="font-mono border border-primary-foreground/20 bg-primary-foreground/5 text-primary-foreground rounded px-1.5 py-0.5 text-[10px]">
-                    CMD
-                  </span>
-                  <span className="font-mono border border-primary-foreground/20 bg-primary-foreground/5 text-primary-foreground rounded px-1.5 py-0.5 text-[10px]">
-                    →
-                  </span>
-                </div>
-              </Button>
-            )}
+            {/* Center: Live Log */}
+            <div className="flex-1 mx-8 font-mono text-xs text-muted-foreground flex items-center gap-3 max-w-md min-w-0">
+              <span className="text-green-400 flex-shrink-0">➜</span>
+              <span className="flex-1 truncate">{liveLog}</span>
+              <span className="w-1.5 h-3 bg-muted-foreground/40 animate-pulse flex-shrink-0" />
+            </div>
+
+            {/* Right: Navigation */}
+            <div className="flex items-center gap-3">
+              {currentStep > 0 && (
+                <Button
+                  onClick={handleBack}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </Button>
+              )}
+
+              {currentStep < steps.length - 1 ? (
+                <Button
+                  onClick={handleNext}
+                  className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Next Step
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleDownloadScript}
+                  className="gap-2 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:opacity-90"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Script
+                </Button>
+              )}
+            </div>
+            </div>
           </div>
-        </div>
-      </main>
+        </motion.div>
+      </motion.main>
     </div>
   );
 };

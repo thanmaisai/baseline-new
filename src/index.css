@@ -19,6 +19,7 @@
     --primary-foreground: 0 0% 100%;
     
     --primary-glow: 217 91% 60%;
+    --primary-rgb: 59, 130, 246;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
@@ -86,6 +87,7 @@
     --primary-foreground: 0 0% 0%;
     
     --primary-glow: 0 0% 100%;
+    --primary-rgb: 255, 255, 255;
 
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 100%;
@@ -197,6 +199,15 @@
   }
   
   .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }

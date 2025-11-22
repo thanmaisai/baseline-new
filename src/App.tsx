@@ -110,7 +110,7 @@ const AnimatedRoutes = () => {
     <ThemeProvider>
       <TooltipProvider>
         <Toaster />
-        <Sonner />
+        <Sonner position="top-center" />
         <BrowserRouter>
           <AnimatedRoutes />
         </BrowserRouter>
