@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { ArrowLeft, ArrowRight, Download, Check, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download, Check, X, Loader2, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ToolCard } from '@/components/ToolCard';
 import { PageHeader } from '@/components/PageHeader';
 import { usePersistedSelection } from '@/hooks/usePersistedSelection';
+import { useBrewPackages } from '@/hooks/useBrewPackages';
 import { tools } from '@/data/tools';
 import { Tool, ToolCategory } from '@/types/tools';
 import { generateSetupScript } from '@/utils/scriptGenerator';
@@ -53,11 +54,29 @@ const Configurator = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [liveLog, setLiveLog] = useState('waiting for input...');
+  const [liveLog, setLiveLog] = useState('loading homebrew packages...');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { selection, setSelection, clearSelection } = usePersistedSelection();
+  
+  // Fetch real-time Homebrew data
+  const { 
+    packages: brewPackages, 
+    loading: brewLoading, 
+    error: brewError,
+    refreshData,
+    totalCount 
+  } = useBrewPackages();
 
   const currentCategory = steps[currentStep].id as ToolCategory | 'review' | 'templates';
+  
+  // Update log when Homebrew data loads
+  useEffect(() => {
+    if (!brewLoading && totalCount > 0) {
+      updateLog(`loaded ${totalCount.toLocaleString()} homebrew packages`);
+    } else if (brewError) {
+      updateLog('error loading packages - using cached data');
+    }
+  }, [brewLoading, totalCount, brewError]);
   
   // Keyboard shortcuts
   useEffect(() => {
@@ -87,13 +106,47 @@ const Configurator = () => {
   const filteredTools = useMemo(() => {
     if (currentCategory === 'review' || currentCategory === 'templates') return [];
     
-    return tools
-      .filter(t => t.category === currentCategory)
-      .filter(t => 
-        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-  }, [currentCategory, searchQuery]);
+    // Merge static tools with Homebrew packages
+    const categoryBrewPackages = brewPackages
+      .filter(pkg => pkg.category === currentCategory)
+      .map(pkg => ({
+        id: pkg.id,
+        name: pkg.name,
+        description: pkg.description,
+        category: pkg.category as ToolCategory,
+        installCommand: pkg.installCommand,
+        type: (pkg.type === 'cask' ? 'brew-cask' : 'brew') as 'brew' | 'brew-cask',
+        isHomebrew: true,
+        homepage: pkg.homepage,
+        version: pkg.version,
+        popular: pkg.popular,
+      } as Tool));
+    
+    const staticTools = tools.filter(t => t.category === currentCategory);
+    
+    // Combine and deduplicate by name (prefer static tools)
+    const toolMap = new Map<string, Tool>();
+    staticTools.forEach(tool => toolMap.set(tool.name.toLowerCase(), tool));
+    categoryBrewPackages.forEach(tool => {
+      const key = tool.name.toLowerCase();
+      if (!toolMap.has(key)) {
+        toolMap.set(key, tool);
+      }
+    });
+    
+    const allTools = Array.from(toolMap.values());
+    
+    // Filter by search query
+    return allTools.filter(t => 
+      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.description.toLowerCase().includes(searchQuery.toLowerCase())
+    ).sort((a, b) => {
+      // Sort: popular first, then alphabetically
+      if (a.popular && !b.popular) return -1;
+      if (!a.popular && b.popular) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [currentCategory, searchQuery, brewPackages, brewLoading]);
 
   const isToolSelected = (tool: Tool) => {
     return selection.tools.some(t => t.id === tool.id);
@@ -313,6 +366,25 @@ const Configurator = () => {
               
               {currentCategory !== 'review' && currentCategory !== 'templates' && filteredTools.length > 0 && (
                 <div className="flex items-center gap-3">
+                  {brewLoading && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mr-2">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span>Loading packages...</span>
+                    </div>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      refreshData();
+                      toast.success('Refreshing package data...');
+                    }}
+                    className="h-8 text-xs font-medium"
+                    disabled={brewLoading}
+                  >
+                    <RefreshCw className={`h-3 w-3 mr-1.5 ${brewLoading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -416,6 +488,29 @@ const Configurator = () => {
               exit={{ opacity: 0 }}
               className="relative"
             >
+              {/* Info Banner */}
+              {!brewLoading && totalCount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Check className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        Live Homebrew Data
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Showing {filteredTools.length.toLocaleString()} packages from {totalCount.toLocaleString()} total
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {filteredTools.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pb-8">
                   {filteredTools.map((tool, index) => (

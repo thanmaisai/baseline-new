@@ -13,8 +13,11 @@ export interface Tool {
   category: ToolCategory;
   icon?: string;
   installCommand: string;
-  type: 'brew' | 'brew-cask' | 'mas' | 'npm' | 'custom';
+  type?: 'brew' | 'brew-cask' | 'mas' | 'npm' | 'custom';
   popular?: boolean;
+  isHomebrew?: boolean;
+  homepage?: string;
+  version?: string;
 }
 
 export interface LanguageVersion {
