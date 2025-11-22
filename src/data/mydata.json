@@ -1,0 +1,310 @@
+[
+  {
+    "id": "browsers",
+    "popular": [
+      "Arc",
+      "Brave",
+      "Atlas",
+      "Comet",
+      "Google Chrome",
+      "Mozilla Firefox",
+      "Safari",
+      "Microsoft Edge",
+      "Vivaldi",
+      "Opera",
+      "Tor Browser"
+    ],
+    "devPicks": ["Atlas", "Arc", "Safari"]
+  },
+  {
+    "id": "terminal",
+    "popular": [
+      "iTerm2",
+      "Warp",
+      "Alacritty",
+      "Kitty",
+      "WezTerm",
+      "Hyper"
+    ],
+    "devPicks": ["Warp", "iTerm2"]
+  },
+  {
+    "id": "dev-tools",
+    "popular": [
+      "Visual Studio Code",
+      "Cursor",
+      "Windsurf",
+      "Zed",
+      "IntelliJ IDEA",
+      "WebStorm",
+      "PyCharm",
+      "Android Studio",
+      "Xcode",
+      "Sublime Text",
+      "Neovim",
+      "Fleet",
+      "Postman",
+      "Insomnia",
+      "Bruno",
+      "RapidAPI",
+      "HTTPie",
+      "GitHub Desktop",
+      "GitKraken",
+      "Sourcetree",
+      "Tower",
+      "DBeaver",
+      "DataGrip",
+      "Beekeeper Studio",
+      "Rider",
+      "GoLand"
+    ],
+    "devPicks": ["Visual Studio Code", "GitHub Desktop", "Postman", "Cursor"]
+  },
+  {
+    "id": "design-tools",
+    "popular": [
+      "Figma",
+      "Sketch",
+      "Adobe XD",
+      "Adobe Photoshop",
+      "Adobe Illustrator",
+      "Affinity Designer",
+      "Framer",
+      "Penpot",
+      "Canva",
+      "Miro",
+      "Whimsical",
+      "Balsamiq",
+      "Axure RP",
+      "ProtoPie",
+      "Principle",
+      "Zeplin",
+      "Origami Studio",
+      "Rive",
+      "Spline",
+      "Blender"
+    ],
+    "devPicks": ["Figma", "Canva", "Miro", "Blender"]
+  },
+  {
+    "id": "communication",
+    "popular": [
+      "Slack",
+      "Discord",
+      "Zoom",
+      "Microsoft Teams",
+      "google-chat",
+      "Telegram",
+      "Signal",
+      "WhatsApp",
+      "Loom",
+      "Tuple",
+      "Webex"
+    ],
+    "devPicks": ["Slack", "Discord", "Zoom"]
+  },
+  {
+    "id": "productivity",
+    "popular": [
+      "Notion",
+      "Obsidian",
+      "Todoist",
+      "TickTick",
+      "Jira",
+      "Linear",
+      "Trello",
+      "Asana",
+      "ClickUp",
+      "Bear",
+      "Craft",
+      "Roam Research",
+      "Superhuman",
+      "Fantastical",
+      "Notion Calendar"
+    ],
+    "devPicks": ["Notion", "Linear", "Obsidian"]
+  },
+  {
+    "id": "version-managers",
+    "popular": [
+      "nvm",
+      "fnm",
+      "pyenv",
+      "rbenv",
+      "asdf",
+      "mise",
+      "sdkman",
+      "jenv",
+      "gvm",
+      "rustup",
+      "volta",
+      "rvm",
+      "phpenv",
+      "swiftenv",
+      "luaver"
+    ],
+    "devPicks": ["nvm", "pyenv", "asdf"]
+  },
+  {
+    "id": "package-managers",
+    "popular": [
+      "Homebrew",
+      "npm",
+      "Yarn",
+      "pnpm",
+      "Bun",
+      "pip",
+      "pipx",
+      "Poetry",
+      "uv",
+      "Conda",
+      "Miniconda",
+      "Cargo",
+      "Composer",
+      "Bundler",
+      "Gem",
+      "Maven",
+      "Gradle",
+      "Swift Package Manager",
+      "CocoaPods",
+      "NuGet",
+      "vcpkg",
+      "Conan"
+    ],
+    "devPicks": ["Homebrew", "pnpm", "Bun", "Miniconda"]
+  },
+  {
+    "id": "devops",
+    "popular": [
+      "Docker Desktop",
+      "Docker Compose",
+      "Colima",
+      "Podman Desktop",
+      "OrbStack",
+      "Kubernetes",
+      "kubectl",
+      "k9s",
+      "Minikube",
+      "Kind",
+      "Lens",
+      "Helm",
+      "Terraform",
+      "OpenTofu",
+      "Pulumi",
+      "Ansible",
+      "Vagrant",
+      "act",
+      "ngrok",
+      "cloudflared"
+    ],
+    "devPicks": ["Docker Desktop"]
+  },
+  {
+    "id": "cloud-cli",
+    "popular": [
+      "AWS CLI",
+      "Google Cloud CLI",
+      "Azure CLI",
+      "Heroku CLI",
+      "Vercel CLI",
+      "Netlify CLI",
+      "DigitalOcean CLI (doctl)",
+      "Cloudflare Wrangler",
+      "Firebase CLI",
+      "Supabase CLI",
+      "Stripe CLI",
+      "Fly.io CLI (flyctl)",
+      "Linode CLI",
+      "Hetzner CLI (hcloud)"
+    ],
+    "devPicks": ["AWS CLI", "Vercel CLI", "Supabase CLI"]
+  },
+  {
+    "id": "databases",
+    "popular": [
+      "PostgreSQL",
+      "MySQL",
+      "Redis",
+      "MongoDB",
+      "SQLite",
+      "MariaDB",
+      "Elasticsearch",
+      "Cassandra",
+      "Neo4j",
+      "CockroachDB",
+      "Memcached",
+      "ClickHouse",
+      "DuckDB",
+      "DynamoDB Local"
+    ],
+    "devPicks": ["PostgreSQL", "Redis", "SQLite"]
+  },
+  {
+    "id": "cli-tools",
+    "popular": [
+      "Git",
+      "GitHub CLI",
+      "fzf",
+      "ripgrep",
+      "bat",
+      "htop",
+      "tmux",
+      "jq",
+      "wget",
+      "curl"
+    ],
+    "devPicks": []
+  },
+  {
+    "id": "media",
+    "popular": [
+      "IINA",
+      "VLC",
+      "mpv",
+      "Spotify",
+      "FFmpeg",
+      "OBS Studio",
+      "Audacity",
+      "DaVinci Resolve",
+      "CapCut",
+      "CleanShot X",
+      "Shottr",
+      "Kap"
+    ],
+    "devPicks": ["IINA", "Spotify", "FFmpeg", "DaVinci Resolve"]
+  },
+  {
+    "id": "security",
+    "popular": [
+      "1Password",
+      "Bitwarden",
+      "KeePassXC"
+    ],
+    "devPicks": []
+  },
+  {
+    "id": "utilities",
+    "popular": [
+      "Raycast",
+      "Alfred",
+      "Rectangle",
+      "BetterTouchTool",
+      "Karabiner-Elements",
+      "AppCleaner",
+      "The Unarchiver",
+      "Stats"
+    ],
+    "devPicks": ["Raycast", "Alfred"]
+  },
+  {
+    "id": "ai",
+    "popular": [
+      "ChatGPT",
+      "Claude",
+      "Gemini",
+      "Ollama",
+      "LM Studio"
+    ],
+    "devPicks": []
+  }
+]

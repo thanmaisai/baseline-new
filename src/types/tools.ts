@@ -12,7 +12,8 @@ export type ToolCategory =
   | 'media'
   | 'security'
   | 'utilities'
-  | 'applications'
+  | 'ai'
+  | 'dev-picks'
   | 'package-managers'
   | 'custom';export interface Tool {
   id: string;

@@ -17,21 +17,21 @@ import confetti from 'canvas-confetti';
 
 const steps = [
   { id: 'templates', name: 'Templates', subtitle: 'Choose Your Starting Point' },
-  { id: 'applications', name: 'Dev Picks', subtitle: 'Developer-Preferred Apps' },
-  { id: 'package-managers', name: 'Package Managers', subtitle: 'Version & Package Managers' },
   { id: 'browsers', name: 'Browsers', subtitle: 'Web Browsers' },
-  { id: 'dev-tools', name: 'Dev Tools', subtitle: 'Editors, IDEs & API Clients' },
-  { id: 'design-tools', name: 'Design', subtitle: 'Graphics & Design Tools' },
   { id: 'communication', name: 'Communication', subtitle: 'Chat, Email & Video' },
   { id: 'productivity', name: 'Productivity', subtitle: 'Notes, Tasks & Office' },
+  { id: 'package-managers', name: 'Package Managers', subtitle: 'Version & Package Managers' },
   { id: 'languages', name: 'Languages', subtitle: 'Runtimes & Version Managers' },
-  { id: 'devops', name: 'DevOps', subtitle: 'Cloud & Container Tools' },
   { id: 'databases', name: 'Databases', subtitle: 'Data Storage Solutions' },
+  { id: 'devops', name: 'DevOps', subtitle: 'Cloud & Container Tools' },
+  { id: 'dev-tools', name: 'Dev Tools', subtitle: 'Editors, IDEs & API Clients' },
+  { id: 'design-tools', name: 'Design', subtitle: 'Graphics & Design Tools' },
   { id: 'terminal', name: 'Terminal', subtitle: 'Shells & Terminal Apps' },
   { id: 'cli-tools', name: 'CLI Tools', subtitle: 'Command-Line Utilities' },
   { id: 'media', name: 'Media', subtitle: 'Music & Video Players' },
   { id: 'security', name: 'Security', subtitle: 'Password & VPN Tools' },
   { id: 'utilities', name: 'Utilities', subtitle: 'System & Productivity Apps' },
+  { id: 'dev-picks', name: 'Dev Picks', subtitle: 'Developer-Preferred Apps' },
   { id: 'review', name: 'Finalize', subtitle: 'Review your stack' },
 ];
 
@@ -125,7 +125,53 @@ const Configurator = () => {
   const filteredTools = useMemo(() => {
     if (currentCategory === 'review' || currentCategory === 'templates') return [];
     
-    // Merge static tools with Homebrew packages
+    // If searching, search across ALL tools
+    if (searchQuery.trim()) {
+      // Get all tools from all categories
+      const allStaticTools = tools;
+      const allBrewPackages = brewPackages.map(pkg => ({
+        id: pkg.id,
+        name: pkg.name,
+        description: pkg.description,
+        category: pkg.category as ToolCategory,
+        installCommand: pkg.installCommand,
+        type: (pkg.type === 'cask' ? 'brew-cask' : 'brew') as 'brew' | 'brew-cask',
+        isHomebrew: true,
+        homepage: pkg.homepage,
+        version: pkg.version,
+        popular: pkg.popular,
+      } as Tool));
+      
+      // Combine and deduplicate by install command (more reliable than name)
+      const toolMap = new Map<string, Tool>();
+      allStaticTools.forEach(tool => toolMap.set(tool.installCommand, tool));
+      allBrewPackages.forEach(tool => {
+        if (!toolMap.has(tool.installCommand)) {
+          toolMap.set(tool.installCommand, tool);
+        }
+      });
+      
+      const allTools = Array.from(toolMap.values());
+      
+      // Use fuzzy search across ALL tools
+      const fuse = new Fuse(allTools, {
+        keys: ['name', 'description'],
+        threshold: 0.4,
+        includeScore: true,
+      });
+      const searchResults = fuse.search(searchQuery).map(result => result.item);
+      
+      // Sort: popular first, then alphabetically
+      searchResults.sort((a, b) => {
+        if (a.popular && !b.popular) return -1;
+        if (!a.popular && b.popular) return 1;
+        return a.name.localeCompare(b.name);
+      });
+      
+      return searchResults;
+    }
+    
+    // When NOT searching, filter by current category
     const categoryBrewPackages = brewPackages
       .filter(pkg => pkg.category === currentCategory)
       .map(pkg => ({
@@ -143,55 +189,41 @@ const Configurator = () => {
     
     const staticTools = tools.filter(t => t.category === currentCategory);
     
-    // Combine and deduplicate by name (prefer static tools)
+    // Combine and deduplicate by install command (prefer static tools)
     const toolMap = new Map<string, Tool>();
-    staticTools.forEach(tool => toolMap.set(tool.name.toLowerCase(), tool));
+    staticTools.forEach(tool => toolMap.set(tool.installCommand, tool));
     categoryBrewPackages.forEach(tool => {
-      const key = tool.name.toLowerCase();
-      if (!toolMap.has(key)) {
-        toolMap.set(key, tool);
+      if (!toolMap.has(tool.installCommand)) {
+        toolMap.set(tool.installCommand, tool);
       }
     });
     
     let allTools = Array.from(toolMap.values());
     
-    // For 'applications' category (Dev Picks), only show tools with devPick: true
-    if (currentCategory === 'applications') {
+    // For 'dev-picks' category (Dev Picks), only show tools with devPick: true
+    if (currentCategory === 'dev-picks') {
       allTools = allTools.filter(tool => tool.devPick === true);
     }
     
-    // Use fuzzy search if there's a query
-    let filtered: Tool[];
-    if (searchQuery.trim()) {
-      const fuse = new Fuse(allTools, {
-        keys: ['name', 'description'],
-        threshold: 0.4,
-        includeScore: true,
-      });
-      filtered = fuse.search(searchQuery).map(result => result.item);
-    } else {
-      filtered = allTools;
-    }
-    
     // Sort: popular first, then alphabetically
-    filtered.sort((a, b) => {
+    allTools.sort((a, b) => {
       if (a.popular && !b.popular) return -1;
       if (!a.popular && b.popular) return 1;
       return a.name.localeCompare(b.name);
     });
     
-    // If searching, show all results; otherwise show only popular tools (or at least first 30)
-    if (!searchQuery && !showAllTools) {
-      const popularTools = filtered.filter(t => t.popular);
+    // If not showing all, limit to popular tools
+    if (!showAllTools) {
+      const popularTools = allTools.filter(t => t.popular);
       // Show popular tools up to 50, or if less than 10 popular tools, show first 30 alphabetically
       if (popularTools.length >= 10) {
-        filtered = popularTools.slice(0, 50);
+        allTools = popularTools.slice(0, 50);
       } else {
-        filtered = filtered.slice(0, 30);
+        allTools = allTools.slice(0, 30);
       }
     }
     
-    return filtered;
+    return allTools;
   }, [currentCategory, searchQuery, brewPackages, brewLoading, showAllTools]);
 
   const isToolSelected = (tool: Tool) => {
@@ -398,7 +430,7 @@ const Configurator = () => {
                     setSearchQuery(e.target.value);
                     updateLog(`searching for "${e.target.value}"`);
                   }}
-                  placeholder="Filter browsers..."
+                  placeholder={`Search all tools...`}
                   className="w-[280px] bg-background border border-border rounded-lg py-2 pl-4 pr-10 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary transition-all"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">

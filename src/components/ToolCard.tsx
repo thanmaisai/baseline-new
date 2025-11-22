@@ -144,78 +144,79 @@ export const ToolCard = ({ tool, selected, onToggle }: ToolCardProps) => {
       ) : (
         // Loaded Card
         <div
-          className={`relative overflow-hidden rounded-xl h-[180px] flex flex-col transition-all duration-200 ${
+          className={`relative overflow-hidden rounded-xl h-[220px] flex flex-col transition-all duration-200 ${
             selected
-              ? 'bg-primary/10 border-2 border-primary/60'
+              ? 'bg-primary/5 border-2 border-primary/60'
               : 'bg-card border border-border hover:border-primary/50 hover:shadow-md'
           }`}
         >
           {/* Top colored border */}
-          <div className={`absolute top-0 left-0 right-0 ${selected ? 'h-1.5' : 'h-1'} transition-all duration-200 ${
+          <div className={`absolute top-0 left-0 right-0 h-1.5 transition-all duration-200 ${
             selected
-              ? 'bg-gradient-to-r from-primary via-primary to-primary/80'
+              ? 'bg-primary'
               : tool.devPick
-              ? 'bg-gradient-to-r from-pink-400 to-purple-400'
+              ? 'bg-pink-500'
               : tool.popular 
-              ? 'bg-gradient-to-r from-orange-400 to-yellow-400' 
-              : 'bg-gradient-to-r from-muted to-muted/50'
+              ? 'bg-orange-500' 
+              : 'bg-muted'
           }`} />
 
-          {/* Badge in top-right */}
-          {(tool.popular || tool.devPick) && (
-            <div className="absolute top-3 right-3 z-20">
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                tool.devPick
-                  ? 'bg-pink-50 text-pink-600 border border-pink-200'
-                  : 'bg-orange-50 text-orange-600 border border-orange-200'
-              }`}>
-                {tool.devPick ? (
-                  <>
-                    <span className="text-xs">💗</span>
-                    <span>Dev Pick</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-xs">🔥</span>
-                    <span>Popular</span>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Spotlight hover effect */}
-          <div
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-            style={{
-              background: 'radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(var(--primary-rgb), 0.06), transparent 50%)',
-            }}
-          />
-
-          <div className="relative z-10 p-5 flex-1 flex flex-col">
-            {/* Icon */}
-            <div className="mb-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-muted to-muted/50 rounded-xl flex items-center justify-center border border-border flex-shrink-0 overflow-hidden shadow-sm">
+          <div className="p-5 flex flex-col h-full">
+            <div className="flex justify-between items-start mb-3">
+              {/* Icon */}
+              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-border/50 shadow-sm overflow-hidden">
                 {currentIconUrl && iconLoaded ? (
                   <img
                     src={currentIconUrl}
                     alt={tool.name}
-                    className="w-9 h-9 object-contain animate-in fade-in duration-300"
+                    className="w-8 h-8 object-contain animate-in fade-in duration-300"
                   />
                 ) : (
                   <span className="text-2xl animate-in fade-in duration-300">{fallbackEmoji}</span>
                 )}
               </div>
+
+              {/* Top Right Badge */}
+              {(tool.popular || tool.devPick) && (
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
+                  tool.devPick
+                    ? 'bg-pink-50 text-pink-600 border-pink-200'
+                    : 'bg-orange-50 text-orange-600 border-orange-200'
+                }`}>
+                  {tool.devPick ? (
+                    <>
+                      <span className="text-xs">💗</span>
+                      <span>Dev Pick</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-xs">🔥</span>
+                      <span>Popular</span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Content */}
-            <div className="flex-1 flex flex-col min-h-0">
-              <h3 className="font-bold text-foreground text-lg mb-1.5 line-clamp-1">
+            <div className="flex-1">
+              <h3 className="font-bold text-foreground text-lg mb-2 line-clamp-1">
                 {tool.name}
               </h3>
-              <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+              <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                 {tool.description}
               </p>
+            </div>
+
+            {/* Bottom Tag */}
+            <div className="mt-4 pt-2">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-muted/50 text-muted-foreground border border-border/50">
+                {tool.type === 'brew-cask' ? 'Cask' : 
+                 tool.type === 'brew' ? 'CLI' : 
+                 tool.type === 'mas' ? 'App Store' :
+                 tool.type === 'npm' ? 'NPM' :
+                 'Custom'}
+              </span>
             </div>
           </div>
         </div>
