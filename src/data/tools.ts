@@ -109,7 +109,7 @@ export const tools: Tool[] = [
   // Cli-Tools
   {
     id: 'git',
-    name: "Git",
+    name: "git",
     description: "Distributed revision control system",
     category: 'cli-tools',
     icon: '🌳',
@@ -119,7 +119,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'gh',
-    name: "GitHub CLI",
+    name: "gh",
     description: "GitHub command-line tool",
     category: 'cli-tools',
     icon: '🐙',
@@ -280,7 +280,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'telegram',
-    name: "Telegram",
+    name: "Telegram for macOS",
     description: "Messaging app with a focus on speed and security",
     category: 'communication',
     icon: '💬',
@@ -331,7 +331,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'google-chat',
-    name: "google-chat",
+    name: "Chat",
     description: "google-chat",
     category: 'communication',
     icon: '💬',
@@ -342,7 +342,7 @@ export const tools: Tool[] = [
   // Databases
   {
     id: 'cassandra',
-    name: "Cassandra",
+    name: "cassandra",
     description: "Eventually consistent, distributed key-value store",
     category: 'databases',
     icon: '🗄️',
@@ -372,7 +372,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'duckdb',
-    name: "DuckDB",
+    name: "duckdb",
     description: "Embeddable SQL OLAP Database Management System",
     category: 'databases',
     icon: '🗄️',
@@ -402,7 +402,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'mariadb',
-    name: "MariaDB",
+    name: "mariadb",
     description: "Drop-in replacement for MySQL",
     category: 'databases',
     icon: '🗄️',
@@ -412,7 +412,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'memcached',
-    name: "Memcached",
+    name: "memcached",
     description: "High performance, distributed memory object caching system",
     category: 'databases',
     icon: '🗄️',
@@ -423,7 +423,7 @@ export const tools: Tool[] = [
 
   {
     id: 'mysql',
-    name: "MySQL",
+    name: "mysql",
     description: "Open source relational database management system",
     category: 'databases',
     icon: '🗄️',
@@ -433,7 +433,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'neo4j',
-    name: "Neo4j",
+    name: "neo4j",
     description: "Robust (fully ACID) transactional property graph database",
     category: 'databases',
     icon: '🗄️',
@@ -443,18 +443,18 @@ export const tools: Tool[] = [
   },
   {
     id: 'postgresql',
-    name: "PostgreSQL",
+    name: "postgresql@14",
     description: "Object-relational database system",
     category: 'databases',
     icon: '🗄️',
-    installCommand: 'brew install postgresql',
+    installCommand: 'brew install postgresql@14',
     type: 'brew',
     popular: true,
     devPick: true,
   },
   {
     id: 'redis',
-    name: "Redis",
+    name: "redis",
     description: "Persistent key-value database, with built-in net interface",
     category: 'databases',
     icon: '🗄️',
@@ -465,7 +465,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'sqlite',
-    name: "SQLite",
+    name: "sqlite",
     description: "Command-line interface for SQLite",
     category: 'databases',
     icon: '🗄️',
@@ -496,7 +496,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'mongosh',
-    name: "MongoDB Shell",
+    name: "mongosh",
     description: "MongoDB Shell to connect, configure, query, and work with your MongoDB database",
     category: 'databases',
     icon: '🗄️',
@@ -510,8 +510,8 @@ export const tools: Tool[] = [
 
   {
     id: 'affinity-designer',
-    name: "Affinity Designer",
-    description: "Affinity Designer",
+    name: "Affinity Designer 2",
+    description: "Professional graphic design software",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask affinity-designer',
@@ -521,7 +521,7 @@ export const tools: Tool[] = [
   {
     id: 'axure-rp',
     name: "Axure RP",
-    description: "Axure RP",
+    description: "Planning and prototyping tool for developers",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask axure-rp',
@@ -531,7 +531,7 @@ export const tools: Tool[] = [
   {
     id: 'balsamiq',
     name: "Balsamiq Wireframes",
-    description: "Balsamiq Wireframes",
+    description: "UI wireframing tool",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask balsamiq-wireframes',
@@ -541,7 +541,7 @@ export const tools: Tool[] = [
   {
     id: 'blender',
     name: "Blender",
-    description: "Blender",
+    description: "3D creation suite",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask blender',
@@ -552,7 +552,7 @@ export const tools: Tool[] = [
   {
     id: 'canva',
     name: "Canva",
-    description: "Canva",
+    description: "Design tool",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask canva',
@@ -563,7 +563,7 @@ export const tools: Tool[] = [
   {
     id: 'figma',
     name: "Figma",
-    description: "Collaborative design tool",
+    description: "Collaborative team software",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask figma',
@@ -574,7 +574,7 @@ export const tools: Tool[] = [
   {
     id: 'framer',
     name: "Framer",
-    description: "Framer",
+    description: "Tool that helps teams design every part of the product experience",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask framer',
@@ -584,7 +584,7 @@ export const tools: Tool[] = [
   {
     id: 'miro',
     name: "Miro",
-    description: "Miro",
+    description: "Online collaborative whiteboard platform",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask miro',
@@ -595,7 +595,7 @@ export const tools: Tool[] = [
   {
     id: 'origami-studio',
     name: "Origami Studio",
-    description: "Origami Studio",
+    description: "Design tool for interactive interfaces",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask origami-studio',
@@ -606,7 +606,7 @@ export const tools: Tool[] = [
   {
     id: 'principle',
     name: "Principle",
-    description: "Principle",
+    description: "Design animated and interactive user interfaces",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask principle',
@@ -616,7 +616,7 @@ export const tools: Tool[] = [
   {
     id: 'protopie',
     name: "ProtoPie",
-    description: "ProtoPie",
+    description: "Create interactive prototypes",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask protopie',
@@ -626,7 +626,7 @@ export const tools: Tool[] = [
   {
     id: 'rive',
     name: "Rive",
-    description: "Rive",
+    description: "Design tool that creates functional graphics",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask rive',
@@ -636,7 +636,7 @@ export const tools: Tool[] = [
   {
     id: 'sketch',
     name: "Sketch",
-    description: "Sketch",
+    description: "Digital design and prototyping platform",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask sketch',
@@ -646,7 +646,7 @@ export const tools: Tool[] = [
   {
     id: 'spline',
     name: "Spline",
-    description: "Spline",
+    description: "Design and collaborate in 3D",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask spline',
@@ -656,7 +656,7 @@ export const tools: Tool[] = [
   {
     id: 'whimsical',
     name: "Whimsical",
-    description: "Whimsical",
+    description: "Collaboration and diagramming tool",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask whimsical',
@@ -666,7 +666,7 @@ export const tools: Tool[] = [
   {
     id: 'zeplin',
     name: "Zeplin",
-    description: "Zeplin",
+    description: "Share, organise and collaborate on designs",
     category: 'design-tools',
     icon: '🎨',
     installCommand: 'brew install --cask zeplin',
@@ -778,7 +778,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'goland',
-    name: "GoLand",
+    name: "Goland",
     description: "Go (golang) IDE",
     category: 'dev-tools',
     icon: '💻',
@@ -788,7 +788,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'httpie',
-    name: "HTTPie",
+    name: "httpie",
     description: "User-friendly cURL replacement (command-line HTTP client)",
     category: 'dev-tools',
     icon: '💻',
@@ -808,7 +808,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'intellij-idea',
-    name: "IntelliJ IDEA",
+    name: "IntelliJ IDEA Ultimate",
     description: "Java IDE by JetBrains",
     category: 'dev-tools',
     icon: '💻',
@@ -818,7 +818,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'neovim',
-    name: "Neovim",
+    name: "neovim",
     description: "Ambitious Vim-fork focused on extensibility and agility",
     category: 'dev-tools',
     icon: '💻',
@@ -859,7 +859,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'rider',
-    name: "Rider",
+    name: "JetBrains Rider",
     description: ".NET IDE",
     category: 'dev-tools',
     icon: '💻',
@@ -869,7 +869,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'sourcetree',
-    name: "Sourcetree",
+    name: "Atlassian SourceTree",
     description: "Graphical client for Git version control",
     category: 'dev-tools',
     icon: '💻',
@@ -899,7 +899,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'vscode',
-    name: "Visual Studio Code",
+    name: "Microsoft Visual Studio Code",
     description: "Open-source code editor",
     category: 'dev-tools',
     icon: '💻',
@@ -945,14 +945,14 @@ export const tools: Tool[] = [
     description: "Install and switch between multiple versions of Xcode",
     category: 'dev-tools',
     icon: '💻',
-    installCommand: 'brew install --cask xcodes',
+    installCommand: 'brew install --cask xcodes-app',
     type: 'brew-cask',
     popular: true,
   },
   // Devops
   {
     id: 'aws-cli',
-    name: "AWS CLI",
+    name: "awscli",
     description: "Official Amazon AWS command-line interface",
     category: 'devops',
     icon: '☁️',
@@ -963,7 +963,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'ansible',
-    name: "Ansible",
+    name: "ansible",
     description: "Automate deployment, configuration, and upgrading",
     category: 'devops',
     icon: '🐳',
@@ -973,7 +973,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'azure-cli',
-    name: "Azure CLI",
+    name: "azure-cli",
     description: "Microsoft Azure CLI 2.0",
     category: 'devops',
     icon: '🐳',
@@ -983,7 +983,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'cloudflare-wrangler',
-    name: "Cloudflare Wrangler",
+    name: "cloudflare-wrangler",
     description: "CLI tool for Cloudflare Workers",
     category: 'devops',
     icon: '🐳',
@@ -993,7 +993,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'colima',
-    name: "Colima",
+    name: "colima",
     description: "Container runtimes on MacOS (and Linux) with minimal setup",
     category: 'devops',
     icon: '🐳',
@@ -1013,7 +1013,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'docker-compose',
-    name: "Docker Compose",
+    name: "docker-compose",
     description: "Isolated development environments using Docker",
     category: 'devops',
     icon: '🐳',
@@ -1027,14 +1027,14 @@ export const tools: Tool[] = [
     description: "App to build and share containerised applications and microservices",
     category: 'devops',
     icon: '🐳',
-    installCommand: 'brew install --cask docker',
+    installCommand: 'brew install --cask docker-desktop',
     type: 'brew-cask',
     popular: true,
     devPick: true,
   },
   {
     id: 'firebase-cli',
-    name: "Firebase CLI",
+    name: "firebase-cli",
     description: "Firebase command-line tools",
     category: 'devops',
     icon: '🐳',
@@ -1064,7 +1064,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'helm',
-    name: "Helm",
+    name: "helm",
     description: "Kubernetes package manager",
     category: 'devops',
     icon: '⚓',
@@ -1094,7 +1094,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'kind',
-    name: "Kind",
+    name: "kind",
     description: "Run local Kubernetes cluster in Docker",
     category: 'devops',
     icon: '🐳',
@@ -1124,7 +1124,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'linode-cli',
-    name: "Linode CLI",
+    name: "linode-cli",
     description: "CLI for the Linode API",
     category: 'devops',
     icon: '🐳',
@@ -1134,7 +1134,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'minikube',
-    name: "Minikube",
+    name: "minikube",
     description: "Run a Kubernetes cluster locally",
     category: 'devops',
     icon: '🐳',
@@ -1144,7 +1144,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'netlify-cli',
-    name: "Netlify CLI",
+    name: "netlify-cli",
     description: "Netlify command-line tool",
     category: 'devops',
     icon: '🐳',
@@ -1154,7 +1154,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'opentofu',
-    name: "OpenTofu",
+    name: "opentofu",
     description: "Drop-in replacement for Terraform. Infrastructure as Code Tool",
     category: 'devops',
     icon: '🐳',
@@ -1184,7 +1184,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'pulumi',
-    name: "Pulumi",
+    name: "pulumi",
     description: "Cloud native development platform",
     category: 'devops',
     icon: '🐳',
@@ -1194,7 +1194,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'stripe-cli',
-    name: "Stripe CLI",
+    name: "stripe-cli",
     description: "Command-line tool for Stripe",
     category: 'devops',
     icon: '🐳',
@@ -1215,7 +1215,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'terraform',
-    name: "Terraform",
+    name: "terraform",
     description: "Tool to build, change, and version infrastructure",
     category: 'devops',
     icon: '🏗️',
@@ -1235,7 +1235,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'vercel-cli',
-    name: "Vercel CLI",
+    name: "vercel-cli",
     description: "Command-line interface for Vercel",
     category: 'devops',
     icon: '🐳',
@@ -1285,11 +1285,11 @@ export const tools: Tool[] = [
   },
   {
     id: 'kubectl',
-    name: "kubectl",
+    name: "kubernetes-cli",
     description: "Kubernetes command-line interface",
     category: 'devops',
     icon: '☸️',
-    installCommand: 'brew install kubectl',
+    installCommand: 'brew install kubernetes-cli',
     type: 'brew',
     popular: true,
   },
@@ -1347,7 +1347,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'ffmpeg',
-    name: "FFmpeg",
+    name: "ffmpeg",
     description: "Play, record, convert, and stream audio and video",
     category: 'media',
     icon: '🎬',
@@ -1410,7 +1410,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'vlc',
-    name: "VLC",
+    name: "VLC media player",
     description: "Multimedia player",
     category: 'media',
     icon: '🎬',
@@ -1424,17 +1424,17 @@ export const tools: Tool[] = [
     description: "Media player based on MPlayer and mplayer2",
     category: 'media',
     icon: '🎬',
-    installCommand: 'brew install --cask mpv',
+    installCommand: 'brew install --cask stolendata-mpv',
     type: 'brew-cask',
     popular: true,
   },
   {
     id: 'python',
-    name: "Python",
+    name: "python@3.14",
     description: "Interpreted, interactive, object-oriented programming language",
     category: 'languages',
     icon: '🐍',
-    installCommand: 'brew install python',
+    installCommand: 'brew install python@3.14',
     type: 'brew',
     popular: true,
     devPick: true,
@@ -1473,7 +1473,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'cocoapods',
-    name: "CocoaPods",
+    name: "cocoapods",
     description: "Dependency manager for Cocoa projects",
     category: 'package-managers',
     icon: '📦',
@@ -1483,7 +1483,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'composer',
-    name: "Composer",
+    name: "composer",
     description: "Dependency Manager for PHP",
     category: 'package-managers',
     icon: '📦',
@@ -1493,7 +1493,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'conan',
-    name: "Conan",
+    name: "conan",
     description: "Distributed, open source, package manager for C/C++",
     category: 'package-managers',
     icon: '📦',
@@ -1523,7 +1523,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'gradle',
-    name: "Gradle",
+    name: "gradle",
     description: "Open-source build automation tool based on the Groovy and Kotlin DSL",
     category: 'package-managers',
     icon: '📦',
@@ -1534,7 +1534,7 @@ export const tools: Tool[] = [
 
   {
     id: 'maven',
-    name: "Maven",
+    name: "maven",
     description: "Java-based project management",
     category: 'package-managers',
     icon: '📦',
@@ -1555,7 +1555,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'nuget',
-    name: "NuGet",
+    name: "nuget",
     description: "Package manager for Microsoft development platform including .NET",
     category: 'package-managers',
     icon: '📦',
@@ -1565,7 +1565,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'poetry',
-    name: "Poetry",
+    name: "poetry",
     description: "Python package management tool",
     category: 'package-managers',
     icon: '📦',
@@ -1585,7 +1585,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'yarn',
-    name: "Yarn",
+    name: "yarn",
     description: "JavaScript package manager",
     category: 'package-managers',
     icon: '📦',
@@ -1656,11 +1656,11 @@ export const tools: Tool[] = [
   },
   {
     id: 'npm',
-    name: "npm",
-    description: "npm",
+    name: "node",
+    description: "Open-source, cross-platform JavaScript runtime environment",
     category: 'package-managers',
     icon: '📦',
-    installCommand: 'brew install npm',
+    installCommand: 'brew install node',
     type: 'brew',
     popular: true,
   },
@@ -1938,7 +1938,7 @@ export const tools: Tool[] = [
     description: "To-do list",
     category: 'productivity',
     icon: '📅',
-    installCommand: 'brew install --cask todoist',
+    installCommand: 'brew install --cask todoist-app',
     type: 'brew-cask',
     popular: true,
   },
@@ -2006,7 +2006,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'kitty',
-    name: "Kitty",
+    name: "kitty",
     description: "GPU-based terminal emulator",
     category: 'terminal',
     icon: '🐱',
@@ -2060,7 +2060,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'appcleaner',
-    name: "AppCleaner",
+    name: "FreeMacSoft AppCleaner",
     description: "Application uninstaller",
     category: 'utilities',
     icon: '🔧',
@@ -2080,7 +2080,7 @@ export const tools: Tool[] = [
   },
   {
     id: 'karabiner-elements',
-    name: "Karabiner-Elements",
+    name: "Karabiner Elements",
     description: "Keyboard customiser",
     category: 'utilities',
     icon: '🔧',
@@ -2133,7 +2133,7 @@ export const tools: Tool[] = [
   {
     id: 'chatgpt',
     name: "ChatGPT",
-    description: "ChatGPT Desktop Application",
+    description: "OpenAI's official ChatGPT desktop app",
     category: 'ai',
     icon: '🤖',
     installCommand: 'brew install --cask chatgpt',
@@ -2143,7 +2143,7 @@ export const tools: Tool[] = [
   {
     id: 'claude',
     name: "Claude",
-    description: "Claude AI Assistant",
+    description: "Anthropic's official Claude AI desktop app",
     category: 'ai',
     icon: '🤖',
     installCommand: 'brew install --cask claude',
@@ -2153,7 +2153,7 @@ export const tools: Tool[] = [
   {
     id: 'gemini',
     name: "Gemini",
-    description: "Google Gemini",
+    description: "Disk space cleaner that finds and deletes duplicated and similar files",
     category: 'ai',
     icon: '🤖',
     installCommand: 'brew install --cask gemini',
@@ -2162,8 +2162,8 @@ export const tools: Tool[] = [
   },
   {
     id: 'ollama',
-    name: "Ollama",
-    description: "Run Llama 2, Code Llama, and other models locally",
+    name: "ollama",
+    description: "Create, run, and share large language models (LLMs)",
     category: 'ai',
     icon: '🦙',
     installCommand: 'brew install ollama',
