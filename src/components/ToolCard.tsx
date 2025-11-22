@@ -26,7 +26,7 @@ export const ToolCard = ({ tool, selected, onToggle }: ToolCardProps) => {
     setIsPreloading(true);
     setIconLoaded(false);
     
-    const fallbackUrls = getAppIconFallbacks(tool.name, tool.homepage);
+    const fallbackUrls = getAppIconFallbacks(tool.name, tool.url);
     
     // If we have cached URL, use it immediately
     if (fallbackUrls.length === 1) {
@@ -37,20 +37,29 @@ export const ToolCard = ({ tool, selected, onToggle }: ToolCardProps) => {
     }
     
     const findWorkingIcon = async () => {
-      // Test first 3 URLs in parallel for speed
+      // Test URLs with stricter validation
       const testUrl = (url: string): Promise<{ url: string; works: boolean }> => {
         return new Promise((resolve) => {
           const img = new Image();
-          img.onload = () => resolve({ url, works: true });
+          
+          img.onload = () => {
+            // Verify it's a valid image (not a placeholder or error page)
+            if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+              resolve({ url, works: true });
+            } else {
+              resolve({ url, works: false });
+            }
+          };
+          
           img.onerror = () => resolve({ url, works: false });
           img.src = url;
           
-          // Timeout after 1.5 seconds
-          setTimeout(() => resolve({ url, works: false }), 1500);
+          // Timeout after 1 second (faster = better UX)
+          setTimeout(() => resolve({ url, works: false }), 1000);
         });
       };
       
-      // Test first batch in parallel
+      // Test first 3 URLs in parallel for speed
       const firstBatch = fallbackUrls.slice(0, 3);
       const results = await Promise.all(firstBatch.map(testUrl));
       
@@ -61,12 +70,12 @@ export const ToolCard = ({ tool, selected, onToggle }: ToolCardProps) => {
         setCurrentIconUrl(working.url);
         setIconLoaded(true);
         setIsPreloading(false);
-        cacheIconUrl(tool.name, tool.homepage, working.url);
+        cacheIconUrl(tool.name, tool.url, working.url);
         return;
       }
       
-      // If first batch failed, try remaining URLs sequentially
-      for (let i = 3; i < fallbackUrls.length; i++) {
+      // If first batch failed, try next 2 URLs only (don't waste time on bad sources)
+      for (let i = 3; i < Math.min(5, fallbackUrls.length); i++) {
         if (!isMounted) break;
         
         const result = await testUrl(fallbackUrls[i]);
@@ -74,12 +83,12 @@ export const ToolCard = ({ tool, selected, onToggle }: ToolCardProps) => {
           setCurrentIconUrl(result.url);
           setIconLoaded(true);
           setIsPreloading(false);
-          cacheIconUrl(tool.name, tool.homepage, result.url);
+          cacheIconUrl(tool.name, tool.url, result.url);
           return;
         }
       }
       
-      // If no icon works, show emoji
+      // If no icon works after testing 5 URLs, show emoji (better than wrong icon)
       if (isMounted) {
         setIconLoaded(true);
         setIsPreloading(false);
@@ -91,7 +100,7 @@ export const ToolCard = ({ tool, selected, onToggle }: ToolCardProps) => {
     return () => {
       isMounted = false;
     };
-  }, [tool.name, tool.homepage]);
+  }, [tool.name, tool.url]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;

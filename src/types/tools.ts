@@ -26,7 +26,7 @@ export type ToolCategory =
   popular?: boolean;
   devPick?: boolean;
   isHomebrew?: boolean;
-  homepage?: string;
+  url?: string;  // Homepage URL for fetching logos
   version?: string;
 }
 

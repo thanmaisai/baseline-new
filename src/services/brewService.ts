@@ -12,7 +12,7 @@ export interface BrewFormula {
   versioned_formulae: string[];
   desc: string;
   license?: string;
-  homepage: string;
+  homepage: string; // Homebrew API returns 'homepage'
   versions: {
     stable: string;
     head?: string;
@@ -74,7 +74,7 @@ export interface BrewCask {
   tap: string;
   name: string[];
   desc: string;
-  homepage: string;
+  homepage: string; // Homebrew API returns 'homepage'
   url: string;
   url_specs?: Record<string, any>;
   appcast?: string;
@@ -108,7 +108,7 @@ export interface BrewPackage {
   id: string;
   name: string;
   description: string;
-  homepage: string;
+  url: string;
   version: string;
   type: 'formula' | 'cask';
   category: string;
@@ -118,61 +118,109 @@ export interface BrewPackage {
   installCommand: string;
 }
 
-// Cache for API responses
+// Cache for API responses with separate timestamps
 let formulaCache: BrewFormula[] | null = null;
 let caskCache: BrewCask[] | null = null;
-let lastFetchTime = 0;
+let lastFormulaFetchTime = 0;
+let lastCaskFetchTime = 0;
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
 
+// In-flight request tracking to prevent duplicate requests
+let formulaFetchPromise: Promise<BrewFormula[]> | null = null;
+let caskFetchPromise: Promise<BrewCask[]> | null = null;
+
 /**
- * Fetch all Homebrew formulas
+ * Fetch all Homebrew formulas with optimized caching
  */
 export async function fetchFormulas(): Promise<BrewFormula[]> {
   const now = Date.now();
   
   // Return cached data if still valid
-  if (formulaCache && (now - lastFetchTime) < CACHE_DURATION) {
+  if (formulaCache && (now - lastFormulaFetchTime) < CACHE_DURATION) {
     return formulaCache;
   }
 
-  try {
-    const response = await fetch('https://formulae.brew.sh/api/formula.json');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data: BrewFormula[] = await response.json();
-    formulaCache = data;
-    lastFetchTime = now;
-    return data;
-  } catch (error) {
-    console.error('Error fetching Homebrew formulas:', error);
-    return formulaCache || [];
+  // Return in-flight request if one exists
+  if (formulaFetchPromise) {
+    return formulaFetchPromise;
   }
+
+  // Create new fetch promise
+  formulaFetchPromise = (async () => {
+    try {
+      const response = await fetch('https://formulae.brew.sh/api/formula.json', {
+        signal: AbortSignal.timeout(30000), // 30 second timeout
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data: BrewFormula[] = await response.json();
+      
+      // Update cache
+      formulaCache = data;
+      lastFormulaFetchTime = Date.now();
+      
+      return data;
+    } catch (error) {
+      console.error('Error fetching Homebrew formulas:', error);
+      // Return cached data if available, otherwise empty array
+      return formulaCache || [];
+    } finally {
+      // Clear in-flight promise
+      formulaFetchPromise = null;
+    }
+  })();
+
+  return formulaFetchPromise;
 }
 
 /**
- * Fetch all Homebrew casks
+ * Fetch all Homebrew casks with optimized caching
  */
 export async function fetchCasks(): Promise<BrewCask[]> {
   const now = Date.now();
   
   // Return cached data if still valid
-  if (caskCache && (now - lastFetchTime) < CACHE_DURATION) {
+  if (caskCache && (now - lastCaskFetchTime) < CACHE_DURATION) {
     return caskCache;
   }
 
-  try {
-    const response = await fetch('https://formulae.brew.sh/api/cask.json');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data: BrewCask[] = await response.json();
-    caskCache = data;
-    return data;
-  } catch (error) {
-    console.error('Error fetching Homebrew casks:', error);
-    return caskCache || [];
+  // Return in-flight request if one exists
+  if (caskFetchPromise) {
+    return caskFetchPromise;
   }
+
+  // Create new fetch promise
+  caskFetchPromise = (async () => {
+    try {
+      const response = await fetch('https://formulae.brew.sh/api/cask.json', {
+        signal: AbortSignal.timeout(30000), // 30 second timeout
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data: BrewCask[] = await response.json();
+      
+      // Update cache
+      caskCache = data;
+      lastCaskFetchTime = Date.now();
+      
+      return data;
+    } catch (error) {
+      console.error('Error fetching Homebrew casks:', error);
+      // Return cached data if available, otherwise empty array
+      return caskCache || [];
+    } finally {
+      // Clear in-flight promise
+      caskFetchPromise = null;
+    }
+  })();
+
+  return caskFetchPromise;
 }
 
 /**
@@ -304,7 +352,7 @@ function formulaToPackage(formula: BrewFormula): BrewPackage {
     id: `formula-${formula.name}`,
     name: formula.name,
     description,
-    homepage: formula.homepage || '',
+    url: formula.homepage || '',  // Map Homebrew's homepage to our url field
     version: formula.versions?.stable || 'unknown',
     type: 'formula',
     category: categorizePackage(formula.name, description, 'formula'),
@@ -331,7 +379,7 @@ function caskToPackage(cask: BrewCask): BrewPackage {
     id: `cask-${cask.token}`,
     name,
     description,
-    homepage: cask.homepage || '',
+    url: cask.homepage || '',  // Map Homebrew's homepage to our url field
     version: cask.version || 'latest',
     type: 'cask',
     category: categorizePackage(cask.token, description, 'cask'),
@@ -441,5 +489,8 @@ export async function getPopularPackages(limit: number = 50): Promise<BrewPackag
 export function clearCache(): void {
   formulaCache = null;
   caskCache = null;
-  lastFetchTime = 0;
+  lastFormulaFetchTime = 0;
+  lastCaskFetchTime = 0;
+  formulaFetchPromise = null;
+  caskFetchPromise = null;
 }

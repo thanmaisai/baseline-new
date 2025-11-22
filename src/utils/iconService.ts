@@ -30,6 +30,10 @@ const APP_NAME_MAPPINGS: Record<string, string> = {
   'postman': 'postman',
   'github': 'github',
   'git': 'git',
+  'google chat': 'googlechat',
+  'google-chat': 'googlechat',
+  'chatgpt': 'openai',
+  'chatgpt atlas': 'openai',
   'node': 'node-dot-js',
   'nodejs': 'node-dot-js',
   'python': 'python',
@@ -38,6 +42,18 @@ const APP_NAME_MAPPINGS: Record<string, string> = {
   'mongodb': 'mongodb',
   'redis': 'redis',
   'mysql': 'mysql',
+  'mariadb': 'mariadb',
+  'clickhouse': 'clickhouse',
+  'cockroachdb': 'cockroachdb',
+  'elasticsearch': 'elasticsearch',
+  'dynamodb': 'amazonaws',
+  'cassandra': 'apachecassandra',
+  'dbeaver': 'dbeaver',
+  'github desktop': 'github',
+  'lens': 'lens',
+  'orbstack': 'orbstack',
+  'podman': 'podman',
+  'podman desktop': 'podman',
   'zoom': 'zoom',
   'discord': 'discord',
   'telegram': 'telegram',
@@ -70,8 +86,46 @@ const APP_NAME_MAPPINGS: Record<string, string> = {
   'vim': 'vim',
   'neovim': 'neovim',
   'tableplus': 'tableplus',
-  'dbeaver': 'dbeaver',
+  'conda': 'anaconda',
+  'miniconda': 'anaconda',
+  'anaconda': 'anaconda',
+  'bun': 'bun',
+  'cargo': 'rust',
+  'composer': 'composer',
+  'npm': 'npm',
+  'yarn': 'yarn',
+  'pnpm': 'pnpm',
+  'pip': 'pypi',
+  'pipx': 'pypi',
+  'poetry': 'poetry',
+  'maven': 'apachemaven',
+  'gradle': 'gradle',
+  'go': 'go',
+  'golang': 'go',
+  'rust': 'rust',
+  'ruby': 'ruby',
+  'php': 'php',
+  'java': 'openjdk',
+  'openjdk': 'openjdk',
+  'dotnet': 'dotnet',
+  '.net': 'dotnet',
+  'fnm': 'fnm',
+  'conan': 'conan',
+  'cocoapods': 'cocoapods',
+  'rbenv': 'ruby',
+  'pyenv': 'python',
+  'jenv': 'openjdk',
+  'gvm': 'go',
+  'rvm': 'ruby',
+  'asdf': 'asdf',
+  'sdkman': 'openjdk',
 };
+
+// Tools that should use emoji fallback (no reliable logo sources)
+const USE_EMOJI_FALLBACK: Set<string> = new Set([
+  'duckdb',
+  'kind',
+]);
 
 // Icon sources with fallback priority
 const ICON_SOURCES: IconSource[] = [
@@ -124,7 +178,7 @@ function normalizeAppName(appName: string): string {
  * Get the icon URL for an application
  * This works for ANY application, not just hardcoded ones!
  */
-export function getAppIcon(appName: string, homepage?: string): string {
+export function getAppIcon(appName: string, url?: string): string {
   const slug = normalizeAppName(appName);
   
   // Primary: Simple Icons (2000+ logos)
@@ -136,47 +190,60 @@ export function getAppIcon(appName: string, homepage?: string): string {
  * Get multiple fallback URLs for an icon
  * Tries multiple CDNs automatically for ANY app
  */
-export function getAppIconFallbacks(appName: string, homepage?: string): string[] {
+export function getAppIconFallbacks(appName: string, url?: string): string[] {
   // Check cache first
-  const cacheKey = `${appName}-${homepage || ''}`;
+  const cacheKey = `${appName}-${url || ''}`;
   if (iconCache.has(cacheKey)) {
     return [iconCache.get(cacheKey)!];
   }
   
   const urls: string[] = [];
   const slug = normalizeAppName(appName);
+  const lowerName = appName.toLowerCase();
   
-  // 1. Simple Icons - 2000+ brand logos (best quality)
-  urls.push(`https://cdn.simpleicons.org/${slug}`);
+  // If tool should use emoji fallback, return empty array to trigger emoji
+  if (USE_EMOJI_FALLBACK.has(lowerName)) {
+    return [];
+  }
   
-  // 2. Try alternative Simple Icons names (with color)
-  urls.push(`https://cdn.simpleicons.org/${slug}/000000`);
-  
-  // 3. CDN.js - icon libraries
-  urls.push(`https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/${slug}.svg`);
-  
-  // 4. DevIcon - developer tools
-  urls.push(`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-original.svg`);
-  urls.push(`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-plain.svg`);
-  
-  // 5. If homepage provided, try favicon services
-  if (homepage) {
+  // PRIORITY 1: If URL is provided, use it first (most reliable)
+  if (url) {
     try {
-      const domain = new URL(homepage).hostname;
-      // Google's high-res favicon service
-      urls.push(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
-      // Icon Horse - universal favicon fetcher
-      urls.push(`https://icon.horse/icon/${domain}`);
-      // Clearbit Logo API
+      const urlObj = new URL(url);
+      const domain = urlObj.hostname;
+      
+      // Try multiple high-quality logo services with the actual homepage domain
       urls.push(`https://logo.clearbit.com/${domain}`);
+      urls.push(`https://img.logo.dev/${domain}?token=pk_X-FqEC4KRZKFurIsivY8Ww`); // Logo.dev
+      urls.push(`https://icon.horse/icon/${domain}`);
+      urls.push(`https://www.google.com/s2/favicons?domain=${domain}&sz=256`);
+      
+      // Also try the root domain if it's a subdomain
+      const parts = domain.split('.');
+      if (parts.length > 2) {
+        const rootDomain = parts.slice(-2).join('.');
+        urls.push(`https://logo.clearbit.com/${rootDomain}`);
+        urls.push(`https://img.logo.dev/${rootDomain}?token=pk_X-FqEC4KRZKFurIsivY8Ww`);
+      }
     } catch (e) {
-      // Invalid URL, skip
+      // Invalid URL, continue with other methods
     }
   }
   
-  // 6. Try the app name as direct domain guess
-  urls.push(`https://www.google.com/s2/favicons?domain=${slug}.com&sz=128`);
-  urls.push(`https://logo.clearbit.com/${slug}.com`);
+  // PRIORITY 2: Simple Icons - 2000+ brand logos (best for known brands)
+  urls.push(`https://cdn.simpleicons.org/${slug}`);
+  urls.push(`https://cdn.simpleicons.org/${slug}/000000`);
+  
+  // PRIORITY 3: DevIcon - excellent for developer tools and languages
+  urls.push(`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-original.svg`);
+  urls.push(`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-plain.svg`);
+  
+  // PRIORITY 4: Try app name as domain guess (only if we have a mapping or URL)
+  if (url || APP_NAME_MAPPINGS[lowerName]) {
+    urls.push(`https://logo.clearbit.com/${slug}.com`);
+    urls.push(`https://img.logo.dev/${slug}.com?token=pk_X-FqEC4KRZKFurIsivY8Ww`);
+    urls.push(`https://www.google.com/s2/favicons?domain=${slug}.com&sz=128`);
+  }
   
   return urls;
 }
@@ -184,9 +251,9 @@ export function getAppIconFallbacks(appName: string, homepage?: string): string[
 /**
  * Cache a working icon URL
  */
-export function cacheIconUrl(appName: string, homepage: string | undefined, url: string): void {
-  const cacheKey = `${appName}-${homepage || ''}`;
-  iconCache.set(cacheKey, url);
+export function cacheIconUrl(appName: string, toolUrl: string | undefined, iconUrl: string): void {
+  const cacheKey = `${appName}-${toolUrl || ''}`;
+  iconCache.set(cacheKey, iconUrl);
 }
 
 /**
@@ -204,8 +271,8 @@ export function preloadImage(url: string): Promise<boolean> {
 /**
  * Get the first working icon URL from fallbacks
  */
-export async function getWorkingIcon(appName: string, homepage?: string): Promise<string | null> {
-  const fallbacks = getAppIconFallbacks(appName, homepage);
+export async function getWorkingIcon(appName: string, url?: string): Promise<string | null> {
+  const fallbacks = getAppIconFallbacks(appName, url);
   
   for (const url of fallbacks) {
     const works = await preloadImage(url);

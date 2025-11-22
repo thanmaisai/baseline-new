@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { ArrowLeft, ArrowRight, Download, Check, X, Loader2, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Fuse from 'fuse.js';
@@ -8,6 +8,8 @@ import { ToolCard } from '@/components/ToolCard';
 import { PageHeader } from '@/components/PageHeader';
 import { usePersistedSelection } from '@/hooks/usePersistedSelection';
 import { useBrewPackages } from '@/hooks/useBrewPackages';
+import { useDebounce } from '@/hooks/useDebounce';
+import { enhanceToolsWithBrewData } from '@/services/toolEnhancementService';
 import { tools } from '@/data/tools';
 import { Tool, ToolCategory } from '@/types/tools';
 import { generateSetupScript } from '@/utils/scriptGenerator';
@@ -66,6 +68,7 @@ const Configurator = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 250); // 250ms debounce for snappy feel
   const [showAllTools, setShowAllTools] = useState(false);
   const [liveLog, setLiveLog] = useState('loading homebrew packages...');
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -125,10 +128,13 @@ const Configurator = () => {
   const filteredTools = useMemo(() => {
     if (currentCategory === 'review' || currentCategory === 'templates') return [];
     
+    // Enhance static tools with Homebrew data (homepage URLs, etc.)
+    const enhancedStaticTools = enhanceToolsWithBrewData(tools, brewPackages);
+    
     // If searching, search across ALL tools
-    if (searchQuery.trim()) {
+    if (debouncedSearchQuery.trim()) {
       // Get all tools from all categories
-      const allStaticTools = tools;
+      const allStaticTools = enhancedStaticTools;
       const allBrewPackages = brewPackages.map(pkg => ({
         id: pkg.id,
         name: pkg.name,
@@ -137,12 +143,12 @@ const Configurator = () => {
         installCommand: pkg.installCommand,
         type: (pkg.type === 'cask' ? 'brew-cask' : 'brew') as 'brew' | 'brew-cask',
         isHomebrew: true,
-        homepage: pkg.homepage,
+        url: pkg.url,
         version: pkg.version,
         popular: pkg.popular,
       } as Tool));
       
-      // Combine and deduplicate by install command (more reliable than name)
+      // Combine and deduplicate by install command (prefer enhanced static tools)
       const toolMap = new Map<string, Tool>();
       allStaticTools.forEach(tool => toolMap.set(tool.installCommand, tool));
       allBrewPackages.forEach(tool => {
@@ -153,18 +159,64 @@ const Configurator = () => {
       
       const allTools = Array.from(toolMap.values());
       
-      // Use fuzzy search across ALL tools
+      // Use fuzzy search with optimized configuration
       const fuse = new Fuse(allTools, {
-        keys: ['name', 'description'],
-        threshold: 0.4,
+        keys: [
+          { name: 'name', weight: 2 },           // Prioritize name matches
+          { name: 'description', weight: 1 },    // Then description matches
+        ],
+        threshold: 0.3,                         // Stricter matching (0 = perfect, 1 = match anything)
+        distance: 100,                          // Maximum distance between characters
+        minMatchCharLength: 2,                  // Minimum characters to start matching
         includeScore: true,
+        ignoreLocation: true,                   // Match anywhere in the string
+        useExtendedSearch: false,
       });
-      const searchResults = fuse.search(searchQuery).map(result => result.item);
       
-      // Sort: popular first, then alphabetically
+      let searchResults = fuse.search(debouncedSearchQuery)
+        .map(result => result.item);
+      
+      // Deduplicate by normalized name (filter out beta/nightly/dev variants)
+      const seenNames = new Map<string, Tool>();
+      searchResults = searchResults.filter(tool => {
+        const normalizedName = tool.name.toLowerCase().replace(/[\s-]/g, '');
+        const isBetaVariant = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(tool.installCommand);
+        
+        if (!seenNames.has(normalizedName)) {
+          seenNames.set(normalizedName, tool);
+          return true;
+        }
+        
+        // If we've seen this name, only keep it if the existing one is a beta variant and this isn't
+        const existing = seenNames.get(normalizedName)!;
+        const existingIsBeta = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(existing.installCommand);
+        
+        if (existingIsBeta && !isBetaVariant) {
+          seenNames.set(normalizedName, tool);
+          return true;
+        }
+        
+        return false;
+      });
+      
+      // Sort: exact name match > popular > alphabetically
       searchResults.sort((a, b) => {
+        const aNameLower = a.name.toLowerCase();
+        const bNameLower = b.name.toLowerCase();
+        const queryLower = debouncedSearchQuery.toLowerCase();
+        
+        const aExactName = aNameLower === queryLower;
+        const bExactName = bNameLower === queryLower;
+        const aStartsWith = aNameLower.startsWith(queryLower);
+        const bStartsWith = bNameLower.startsWith(queryLower);
+        
+        if (aExactName && !bExactName) return -1;
+        if (!aExactName && bExactName) return 1;
+        if (aStartsWith && !bStartsWith) return -1;
+        if (!aStartsWith && bStartsWith) return 1;
         if (a.popular && !b.popular) return -1;
         if (!a.popular && b.popular) return 1;
+        
         return a.name.localeCompare(b.name);
       });
       
@@ -182,12 +234,12 @@ const Configurator = () => {
         installCommand: pkg.installCommand,
         type: (pkg.type === 'cask' ? 'brew-cask' : 'brew') as 'brew' | 'brew-cask',
         isHomebrew: true,
-        homepage: pkg.homepage,
+        url: pkg.url,  // URL from Homebrew API
         version: pkg.version,
         popular: pkg.popular,
       } as Tool));
     
-    const staticTools = tools.filter(t => t.category === currentCategory);
+    const staticTools = enhancedStaticTools.filter(t => t.category === currentCategory);
     
     // Combine and deduplicate by install command (prefer static tools)
     const toolMap = new Map<string, Tool>();
@@ -199,6 +251,29 @@ const Configurator = () => {
     });
     
     let allTools = Array.from(toolMap.values());
+    
+    // Deduplicate by normalized name (filter out beta/nightly/dev variants)
+    const seenNames = new Map<string, Tool>();
+    allTools = allTools.filter(tool => {
+      const normalizedName = tool.name.toLowerCase().replace(/[\s-]/g, '');
+      const isBetaVariant = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(tool.installCommand);
+      
+      if (!seenNames.has(normalizedName)) {
+        seenNames.set(normalizedName, tool);
+        return true;
+      }
+      
+      // If we've seen this name, only keep it if the existing one is a beta variant and this isn't
+      const existing = seenNames.get(normalizedName)!;
+      const existingIsBeta = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(existing.installCommand);
+      
+      if (existingIsBeta && !isBetaVariant) {
+        seenNames.set(normalizedName, tool);
+        return true;
+      }
+      
+      return false;
+    });
     
     // For 'dev-picks' category (Dev Picks), only show tools with devPick: true
     if (currentCategory === 'dev-picks') {
@@ -224,13 +299,13 @@ const Configurator = () => {
     }
     
     return allTools;
-  }, [currentCategory, searchQuery, brewPackages, brewLoading, showAllTools]);
+  }, [currentCategory, debouncedSearchQuery, brewPackages, showAllTools]);
 
-  const isToolSelected = (tool: Tool) => {
+  const isToolSelected = useCallback((tool: Tool) => {
     return selection.tools.some(t => t.id === tool.id);
-  };
+  }, [selection.tools]);
 
-  const toggleTool = (tool: Tool) => {
+  const toggleTool = useCallback((tool: Tool) => {
     if (isToolSelected(tool)) {
       setSelection(prev => ({
         ...prev,
@@ -244,9 +319,9 @@ const Configurator = () => {
       }));
       updateLog(`added ${tool.name.toLowerCase()}`);
     }
-  };
+  }, [isToolSelected, setSelection]);
 
-  const applyTemplate = (templateId: string) => {
+  const applyTemplate = useCallback((templateId: string) => {
     const template = templates.find(t => t.id === templateId);
     if (!template) return;
 
@@ -261,7 +336,7 @@ const Configurator = () => {
     });
     // Move to next step after selecting template
     handleNext();
-  };
+  }, [setSelection]);
 
   const selectAllInCategory = () => {
     const categoryTools = tools.filter(t => t.category === currentCategory);
@@ -428,14 +503,22 @@ const Configurator = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    updateLog(`searching for "${e.target.value}"`);
+                    if (e.target.value) {
+                      updateLog(`searching for "${e.target.value}"`);
+                    }
                   }}
                   placeholder={`Search all tools...`}
                   className="w-[280px] bg-background border border-border rounded-lg py-2 pl-4 pr-10 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary transition-all"
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <span className="text-xs text-muted-foreground">/</span>
-                </div>
+                {searchQuery !== debouncedSearchQuery ? (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <span className="text-xs text-muted-foreground">⌘K</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -452,10 +535,24 @@ const Configurator = () => {
               exit={{ opacity: 0, y: -10 }}
               className="mb-6"
             >
-              <h1 className="text-3xl font-bold mb-2">{steps[currentStep].name}</h1>
-              <p className="text-sm text-muted-foreground">
-                {steps[currentStep].subtitle}
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold mb-2">{steps[currentStep].name}</h1>
+                  <p className="text-sm text-muted-foreground">
+                    {steps[currentStep].subtitle}
+                  </p>
+                </div>
+                {/* Search results count */}
+                {debouncedSearchQuery && currentCategory !== 'review' && currentCategory !== 'templates' && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-sm text-muted-foreground"
+                  >
+                    {filteredTools.length} {filteredTools.length === 1 ? 'result' : 'results'} found
+                  </motion.div>
+                )}
+              </div>
             </motion.div>
           </AnimatePresence>
 
