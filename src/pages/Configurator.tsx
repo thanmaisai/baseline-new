@@ -17,6 +17,8 @@ import confetti from 'canvas-confetti';
 
 const steps = [
   { id: 'templates', name: 'Templates', subtitle: 'Choose Your Starting Point' },
+  { id: 'applications', name: 'Dev Picks', subtitle: 'Developer-Preferred Apps' },
+  { id: 'package-managers', name: 'Package Managers', subtitle: 'Version & Package Managers' },
   { id: 'browsers', name: 'Browsers', subtitle: 'Web Browsers' },
   { id: 'dev-tools', name: 'Dev Tools', subtitle: 'Editors, IDEs & API Clients' },
   { id: 'design-tools', name: 'Design', subtitle: 'Graphics & Design Tools' },
@@ -151,7 +153,12 @@ const Configurator = () => {
       }
     });
     
-    const allTools = Array.from(toolMap.values());
+    let allTools = Array.from(toolMap.values());
+    
+    // For 'applications' category (Dev Picks), only show tools with devPick: true
+    if (currentCategory === 'applications') {
+      allTools = allTools.filter(tool => tool.devPick === true);
+    }
     
     // Use fuzzy search if there's a query
     let filtered: Tool[];
@@ -519,17 +526,17 @@ const Configurator = () => {
                         });
                       }}
                     >
-                      <div className="relative overflow-hidden rounded-xl h-[280px] flex flex-col border-2 border-dashed border-border hover:border-primary/50 bg-muted/20 hover:bg-muted/30 transition-all duration-200">
+                      <div className="relative overflow-hidden rounded-xl h-[180px] flex flex-col border-2 border-dashed border-border hover:border-primary/50 bg-muted/20 hover:bg-muted/30 transition-all duration-200">
                         {/* Top border */}
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-muted to-muted/50" />
                         
-                        <div className="relative z-10 p-6 flex-1 flex flex-col items-center justify-center text-center gap-4">
-                          <div className="w-16 h-16 rounded-2xl bg-muted/50 border-2 border-dashed border-border group-hover:border-primary/50 flex items-center justify-center transition-colors">
-                            <span className="text-3xl">➕</span>
+                        <div className="relative z-10 p-4 flex-1 flex flex-col items-center justify-center text-center gap-2.5">
+                          <div className="w-12 h-12 rounded-xl bg-muted/50 border-2 border-dashed border-border group-hover:border-primary/50 flex items-center justify-center transition-colors">
+                            <span className="text-xl">➕</span>
                           </div>
                           <div>
-                            <p className="text-lg font-bold text-foreground mb-2">Request a Tool</p>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
+                            <p className="text-sm font-bold text-foreground mb-0.5">Request a Tool</p>
+                            <p className="text-[11px] text-muted-foreground leading-relaxed">
                               Don't see what you need? Add<br />a custom Homebrew formula.
                             </p>
                           </div>

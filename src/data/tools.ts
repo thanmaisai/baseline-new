@@ -20,7 +20,7 @@ export const tools: Tool[] = [
     icon: '⌨️',
     installCommand: 'brew install --cask iterm2',
     type: 'brew-cask',
-    popular: true,
+    devPick: true,
   },
   {
     id: 'docker',
@@ -40,6 +40,7 @@ export const tools: Tool[] = [
     icon: '💬',
     installCommand: 'brew install --cask slack',
     type: 'brew-cask',
+    devPick: true,
   },
   {
     id: 'chrome',
@@ -59,6 +60,7 @@ export const tools: Tool[] = [
     icon: '🎨',
     installCommand: 'brew install --cask figma',
     type: 'brew-cask',
+    devPick: true,
   },
   
   // Package Managers

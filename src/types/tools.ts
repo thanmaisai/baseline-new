@@ -12,6 +12,8 @@ export type ToolCategory =
   | 'media'
   | 'security'
   | 'utilities'
+  | 'applications'
+  | 'package-managers'
   | 'custom';export interface Tool {
   id: string;
   name: string;
@@ -21,6 +23,7 @@ export type ToolCategory =
   installCommand: string;
   type?: 'brew' | 'brew-cask' | 'mas' | 'npm' | 'custom';
   popular?: boolean;
+  devPick?: boolean;
   isHomebrew?: boolean;
   homepage?: string;
   version?: string;
