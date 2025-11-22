@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Download, Check, X, Loader2, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Fuse from 'fuse.js';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ToolCard } from '@/components/ToolCard';
@@ -16,10 +17,19 @@ import confetti from 'canvas-confetti';
 
 const steps = [
   { id: 'templates', name: 'Templates', subtitle: 'Choose Your Starting Point' },
-  { id: 'applications', name: 'Applications', subtitle: 'GUI Tools & Editors' },
-  { id: 'package-managers', name: 'Runtimes', subtitle: 'Version Managers' },
-  { id: 'devops', name: 'Infrastructure', subtitle: 'Cloud & Container Tools' },
-  { id: 'cli-tools', name: 'CLI Tools', subtitle: 'Terminal Utilities' },
+  { id: 'browsers', name: 'Browsers', subtitle: 'Web Browsers' },
+  { id: 'dev-tools', name: 'Dev Tools', subtitle: 'Editors, IDEs & API Clients' },
+  { id: 'design-tools', name: 'Design', subtitle: 'Graphics & Design Tools' },
+  { id: 'communication', name: 'Communication', subtitle: 'Chat, Email & Video' },
+  { id: 'productivity', name: 'Productivity', subtitle: 'Notes, Tasks & Office' },
+  { id: 'languages', name: 'Languages', subtitle: 'Runtimes & Version Managers' },
+  { id: 'devops', name: 'DevOps', subtitle: 'Cloud & Container Tools' },
+  { id: 'databases', name: 'Databases', subtitle: 'Data Storage Solutions' },
+  { id: 'terminal', name: 'Terminal', subtitle: 'Shells & Terminal Apps' },
+  { id: 'cli-tools', name: 'CLI Tools', subtitle: 'Command-Line Utilities' },
+  { id: 'media', name: 'Media', subtitle: 'Music & Video Players' },
+  { id: 'security', name: 'Security', subtitle: 'Password & VPN Tools' },
+  { id: 'utilities', name: 'Utilities', subtitle: 'System & Productivity Apps' },
   { id: 'review', name: 'Finalize', subtitle: 'Review your stack' },
 ];
 
@@ -54,6 +64,7 @@ const Configurator = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAllTools, setShowAllTools] = useState(false);
   const [liveLog, setLiveLog] = useState('loading homebrew packages...');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { selection, setSelection, clearSelection } = usePersistedSelection();
@@ -68,6 +79,12 @@ const Configurator = () => {
   } = useBrewPackages();
 
   const currentCategory = steps[currentStep].id as ToolCategory | 'review' | 'templates';
+  
+  // Reset showAllTools when changing categories
+  useEffect(() => {
+    setShowAllTools(false);
+    setSearchQuery('');
+  }, [currentStep]);
   
   // Update log when Homebrew data loads
   useEffect(() => {
@@ -136,17 +153,39 @@ const Configurator = () => {
     
     const allTools = Array.from(toolMap.values());
     
-    // Filter by search query
-    return allTools.filter(t => 
-      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.description.toLowerCase().includes(searchQuery.toLowerCase())
-    ).sort((a, b) => {
-      // Sort: popular first, then alphabetically
+    // Use fuzzy search if there's a query
+    let filtered: Tool[];
+    if (searchQuery.trim()) {
+      const fuse = new Fuse(allTools, {
+        keys: ['name', 'description'],
+        threshold: 0.4,
+        includeScore: true,
+      });
+      filtered = fuse.search(searchQuery).map(result => result.item);
+    } else {
+      filtered = allTools;
+    }
+    
+    // Sort: popular first, then alphabetically
+    filtered.sort((a, b) => {
       if (a.popular && !b.popular) return -1;
       if (!a.popular && b.popular) return 1;
       return a.name.localeCompare(b.name);
     });
-  }, [currentCategory, searchQuery, brewPackages, brewLoading]);
+    
+    // If searching, show all results; otherwise show only popular tools (or at least first 30)
+    if (!searchQuery && !showAllTools) {
+      const popularTools = filtered.filter(t => t.popular);
+      // Show popular tools up to 50, or if less than 10 popular tools, show first 30 alphabetically
+      if (popularTools.length >= 10) {
+        filtered = popularTools.slice(0, 50);
+      } else {
+        filtered = filtered.slice(0, 30);
+      }
+    }
+    
+    return filtered;
+  }, [currentCategory, searchQuery, brewPackages, brewLoading, showAllTools]);
 
   const isToolSelected = (tool: Tool) => {
     return selection.tools.some(t => t.id === tool.id);
@@ -512,22 +551,48 @@ const Configurator = () => {
               )}
 
               {filteredTools.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pb-8">
-                  {filteredTools.map((tool, index) => (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pb-8">
+                    {filteredTools.map((tool, index) => (
+                      <motion.div
+                        key={tool.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.02, duration: 0.3 }}
+                      >
+                        <ToolCard
+                          tool={tool}
+                          selected={isToolSelected(tool)}
+                          onToggle={() => toggleTool(tool)}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                  
+                  {/* Show All Tools Button */}
+                  {!searchQuery && !showAllTools && (
                     <motion.div
-                      key={tool.id}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.02, duration: 0.3 }}
+                      className="flex flex-col items-center justify-center py-8 gap-4"
                     >
-                      <ToolCard
-                        tool={tool}
-                        selected={isToolSelected(tool)}
-                        onToggle={() => toggleTool(tool)}
-                      />
+                      <p className="text-sm text-muted-foreground">
+                        Showing {filteredTools.length} popular tools
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={() => setShowAllTools(true)}
+                        className="font-medium"
+                      >
+                        Show All Available Tools
+                      </Button>
+                      <p className="text-xs text-muted-foreground">
+                        or use search to find specific packages
+                      </p>
                     </motion.div>
-                  ))}
-                </div>
+                  )}
+                </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                   <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">

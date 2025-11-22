@@ -1,12 +1,18 @@
 export type ToolCategory = 
-  | 'applications' 
-  | 'package-managers' 
-  | 'languages' 
-  | 'devops' 
-  | 'cli-tools' 
-  | 'custom';
-
-export interface Tool {
+  | 'browsers'
+  | 'dev-tools' 
+  | 'design-tools'
+  | 'communication'
+  | 'productivity'
+  | 'languages'
+  | 'devops'
+  | 'databases'
+  | 'terminal'
+  | 'cli-tools'
+  | 'media'
+  | 'security'
+  | 'utilities'
+  | 'custom';export interface Tool {
   id: string;
   name: string;
   description: string;

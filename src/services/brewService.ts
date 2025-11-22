@@ -182,42 +182,101 @@ function categorizePackage(name: string, desc: string | null | undefined, type: 
   const lowerName = name.toLowerCase();
   const lowerDesc = (desc || '').toLowerCase();
   
-  // Applications (GUI tools)
-  if (type === 'cask' || 
-      lowerDesc.includes('gui') || 
-      lowerDesc.includes('application') ||
-      lowerName.match(/^(vscode|chrome|firefox|slack|docker|postman|figma|sketch)/)) {
-    return 'applications';
+  // Browsers
+  if (lowerName.match(/chrome|firefox|safari|edge|brave|opera|arc|vivaldi/) ||
+      lowerDesc.includes('web browser') || lowerDesc.includes('browser')) {
+    return 'browsers';
   }
   
-  // Package managers and runtimes
-  if (lowerName.match(/^(node|python|ruby|go|rust|java|php|perl)/) ||
-      lowerDesc.includes('programming language') ||
-      lowerDesc.includes('runtime') ||
-      lowerDesc.includes('version manager') ||
-      lowerName.includes('nvm') ||
-      lowerName.includes('pyenv') ||
-      lowerName.includes('rbenv')) {
-    return 'package-managers';
+  // Development Tools (Editors, IDEs, API tools)
+  if (lowerName.match(/vscode|visual-studio|sublime|atom|webstorm|pycharm|intellij|code|cursor|zed/) ||
+      lowerName.match(/postman|insomnia|bruno|hoppscotch|paw/) ||
+      lowerDesc.includes('code editor') || lowerDesc.includes('ide') || 
+      lowerDesc.includes('api client') || lowerDesc.includes('api testing')) {
+    return 'dev-tools';
   }
   
-  // DevOps and infrastructure
-  if (lowerDesc.includes('kubernetes') ||
-      lowerDesc.includes('docker') ||
-      lowerDesc.includes('container') ||
-      lowerDesc.includes('cloud') ||
-      lowerDesc.includes('deployment') ||
-      lowerDesc.includes('infrastructure') ||
-      lowerName.match(/^(kubectl|helm|terraform|ansible|vagrant)/)) {
+  // Design Tools
+  if (lowerName.match(/figma|sketch|adobe|photoshop|illustrator|affinity|canva/) ||
+      lowerDesc.includes('design') || lowerDesc.includes('graphics') ||
+      lowerDesc.includes('illustration') || lowerDesc.includes('photo edit')) {
+    return 'design-tools';
+  }
+  
+  // Communication (Chat, Email, Video)
+  if (lowerName.match(/slack|discord|teams|zoom|skype|telegram|whatsapp|signal/) ||
+      lowerName.match(/outlook|thunderbird|spark|airmail/) ||
+      lowerDesc.includes('messaging') || lowerDesc.includes('chat') ||
+      lowerDesc.includes('video conferenc') || lowerDesc.includes('email client')) {
+    return 'communication';
+  }
+  
+  // Productivity (Note-taking, Task management, Office)
+  if (lowerName.match(/notion|obsidian|evernote|onenote|bear|simplenote/) ||
+      lowerName.match(/todoist|things|omnifocus|taskwarrior/) ||
+      lowerName.match(/office|word|excel|pages|numbers|keynote/) ||
+      lowerDesc.includes('note') || lowerDesc.includes('task') ||
+      lowerDesc.includes('productivity') || lowerDesc.includes('office suite')) {
+    return 'productivity';
+  }
+  
+  // Programming Languages & Runtimes
+  if (lowerName.match(/^(node|python|ruby|go|golang|rust|java|openjdk|php|perl|scala|kotlin|swift)$/) ||
+      lowerName.match(/nvm|pyenv|rbenv|jenv|goenv|rustup/) ||
+      lowerDesc.includes('programming language') || lowerDesc.includes('runtime') ||
+      lowerDesc.includes('version manager')) {
+    return 'languages';
+  }
+  
+  // DevOps & Cloud Tools
+  if (lowerName.match(/docker|kubernetes|kubectl|helm|terraform|ansible|vagrant|packer/) ||
+      lowerName.match(/aws|gcloud|azure|heroku/) ||
+      lowerDesc.includes('container') || lowerDesc.includes('orchestration') ||
+      lowerDesc.includes('infrastructure') || lowerDesc.includes('deployment') ||
+      lowerDesc.includes('cloud')) {
     return 'devops';
   }
   
-  // CLI tools (default)
+  // Databases
+  if (lowerName.match(/postgres|mysql|mongodb|redis|sqlite|mariadb|cassandra/) ||
+      lowerDesc.includes('database') || lowerDesc.includes('data store')) {
+    return 'databases';
+  }
+  
+  // Terminal & CLI Tools
+  if (type === 'formula' && !lowerDesc.includes('library')) {
+    if (lowerName.match(/zsh|bash|fish|tmux|screen|iterm|alacritty|kitty|warp/) ||
+        lowerDesc.includes('terminal') || lowerDesc.includes('shell')) {
+      return 'terminal';
+    }
+    return 'cli-tools';
+  }
+  
+  // Media & Entertainment
+  if (lowerName.match(/spotify|vlc|mpv|iina|plex|kodi/) ||
+      lowerDesc.includes('music') || lowerDesc.includes('video player') ||
+      lowerDesc.includes('media player') || lowerDesc.includes('streaming')) {
+    return 'media';
+  }
+  
+  // Security & Privacy
+  if (lowerName.match(/1password|bitwarden|keepass|lastpass|nordvpn|expressvpn/) ||
+      lowerDesc.includes('password') || lowerDesc.includes('vpn') ||
+      lowerDesc.includes('security') || lowerDesc.includes('encryption')) {
+    return 'security';
+  }
+  
+  // Utilities
+  if (type === 'cask') {
+    return 'utilities';
+  }
+  
+  // Default for formulas
   return 'cli-tools';
 }
 
 /**
- * Check if package is popular based on analytics
+ * Check if a package is popular based on analytics
  */
 function isPopular(analytics?: Record<string, any>): boolean {
   if (!analytics || !analytics.install) return false;
@@ -226,8 +285,8 @@ function isPopular(analytics?: Record<string, any>): boolean {
   const installCounts = Object.values(analytics.install) as number[];
   const recentInstalls = installCounts.slice(-1)[0] || 0;
   
-  // Consider popular if > 10k installs in last 30 days
-  return recentInstalls > 10000;
+  // Consider popular if > 1k installs in last 30 days
+  return recentInstalls > 1000;
 }
 
 /**
@@ -235,6 +294,12 @@ function isPopular(analytics?: Record<string, any>): boolean {
  */
 function formulaToPackage(formula: BrewFormula): BrewPackage {
   const description = formula.desc || 'No description available';
+  const lowerName = formula.name.toLowerCase();
+  
+  // Well-known tools should always be marked as popular
+  const wellKnownTools = /^(git|node|python|go|rust|docker|kubernetes|kubectl|terraform|ansible|postgres|mysql|mongodb|redis|nginx|apache|vim|neovim|tmux|wget|curl|jq|tree|htop|ffmpeg)$/;
+  const isWellKnown = wellKnownTools.test(lowerName);
+  
   return {
     id: `formula-${formula.name}`,
     name: formula.name,
@@ -245,7 +310,7 @@ function formulaToPackage(formula: BrewFormula): BrewPackage {
     category: categorizePackage(formula.name, description, 'formula'),
     deprecated: formula.deprecated || false,
     disabled: formula.disabled || false,
-    popular: isPopular(formula.analytics),
+    popular: isWellKnown || isPopular(formula.analytics),
     installCommand: `brew install ${formula.name}`,
   };
 }
@@ -256,6 +321,12 @@ function formulaToPackage(formula: BrewFormula): BrewPackage {
 function caskToPackage(cask: BrewCask): BrewPackage {
   const description = cask.desc || 'No description available';
   const name = (cask.name && cask.name[0]) || cask.token;
+  const lowerToken = cask.token.toLowerCase();
+  
+  // Well-known applications should always be marked as popular
+  const wellKnownApps = /^(visual-studio-code|google-chrome|firefox|brave-browser|arc|slack|discord|zoom|docker|figma|notion|obsidian|1password|postman|insomnia|bruno|iterm2|warp|sublime-text|spotify|vlc|iina|whatsapp|telegram|signal)$/;
+  const isWellKnown = wellKnownApps.test(lowerToken);
+  
   return {
     id: `cask-${cask.token}`,
     name,
@@ -266,7 +337,7 @@ function caskToPackage(cask: BrewCask): BrewPackage {
     category: categorizePackage(cask.token, description, 'cask'),
     deprecated: cask.deprecated || false,
     disabled: cask.disabled || false,
-    popular: isPopular(cask.analytics),
+    popular: isWellKnown || isPopular(cask.analytics),
     installCommand: `brew install --cask ${cask.token}`,
   };
 }
