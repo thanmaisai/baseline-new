@@ -206,43 +206,40 @@ export function getAppIconFallbacks(appName: string, url?: string): string[] {
     return [];
   }
   
-  // PRIORITY 1: If URL is provided, use it first (most reliable)
+  // PRIORITY 1: Simple Icons - 2000+ brand logos (best for known brands)
+  // This is reliable and not blocked by ad blockers
+  urls.push(`https://cdn.simpleicons.org/${slug}`);
+  
+  // PRIORITY 2: DevIcon - excellent for developer tools and languages
+  urls.push(`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-original.svg`);
+  urls.push(`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-plain.svg`);
+  
+  // PRIORITY 3: If URL is provided, try domain-based fallbacks (ad-blocker friendly)
   if (url) {
     try {
       const urlObj = new URL(url);
       const domain = urlObj.hostname;
       
-      // Try multiple high-quality logo services with the actual homepage domain
-      urls.push(`https://logo.clearbit.com/${domain}`);
-      urls.push(`https://img.logo.dev/${domain}?token=pk_X-FqEC4KRZKFurIsivY8Ww`); // Logo.dev
-      urls.push(`https://icon.horse/icon/${domain}`);
+      // Use Google's favicon service and icon.horse (not blocked by ad blockers)
       urls.push(`https://www.google.com/s2/favicons?domain=${domain}&sz=256`);
+      urls.push(`https://icon.horse/icon/${domain}`);
       
       // Also try the root domain if it's a subdomain
       const parts = domain.split('.');
       if (parts.length > 2) {
         const rootDomain = parts.slice(-2).join('.');
-        urls.push(`https://logo.clearbit.com/${rootDomain}`);
-        urls.push(`https://img.logo.dev/${rootDomain}?token=pk_X-FqEC4KRZKFurIsivY8Ww`);
+        urls.push(`https://www.google.com/s2/favicons?domain=${rootDomain}&sz=256`);
+        urls.push(`https://icon.horse/icon/${rootDomain}`);
       }
     } catch (e) {
       // Invalid URL, continue with other methods
     }
   }
   
-  // PRIORITY 2: Simple Icons - 2000+ brand logos (best for known brands)
-  urls.push(`https://cdn.simpleicons.org/${slug}`);
-  urls.push(`https://cdn.simpleicons.org/${slug}/000000`);
-  
-  // PRIORITY 3: DevIcon - excellent for developer tools and languages
-  urls.push(`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-original.svg`);
-  urls.push(`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-plain.svg`);
-  
   // PRIORITY 4: Try app name as domain guess (only if we have a mapping or URL)
   if (url || APP_NAME_MAPPINGS[lowerName]) {
-    urls.push(`https://logo.clearbit.com/${slug}.com`);
-    urls.push(`https://img.logo.dev/${slug}.com?token=pk_X-FqEC4KRZKFurIsivY8Ww`);
-    urls.push(`https://www.google.com/s2/favicons?domain=${slug}.com&sz=128`);
+    urls.push(`https://www.google.com/s2/favicons?domain=${slug}.com&sz=256`);
+    urls.push(`https://icon.horse/icon/${slug}.com`);
   }
   
   return urls;

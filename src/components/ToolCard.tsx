@@ -41,21 +41,30 @@ export const ToolCard = ({ tool, selected, onToggle }: ToolCardProps) => {
       const testUrl = (url: string): Promise<{ url: string; works: boolean }> => {
         return new Promise((resolve) => {
           const img = new Image();
+          let resolved = false;
+          
+          const cleanup = (works: boolean) => {
+            if (!resolved) {
+              resolved = true;
+              resolve({ url, works });
+            }
+          };
           
           img.onload = () => {
             // Verify it's a valid image (not a placeholder or error page)
             if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-              resolve({ url, works: true });
+              cleanup(true);
             } else {
-              resolve({ url, works: false });
+              cleanup(false);
             }
           };
           
-          img.onerror = () => resolve({ url, works: false });
-          img.src = url;
+          img.onerror = () => cleanup(false);
           
-          // Timeout after 1 second (faster = better UX)
-          setTimeout(() => resolve({ url, works: false }), 1000);
+          // Faster timeout: 500ms (better UX, fail fast)
+          setTimeout(() => cleanup(false), 500);
+          
+          img.src = url;
         });
       };
       
