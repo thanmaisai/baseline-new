@@ -75,24 +75,24 @@ const Configurator = () => {
   const [liveLog, setLiveLog] = useState('loading homebrew packages...');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { selection, setSelection, clearSelection } = usePersistedSelection();
-  
+
   // Fetch real-time Homebrew data
-  const { 
-    packages: brewPackages, 
-    loading: brewLoading, 
+  const {
+    packages: brewPackages,
+    loading: brewLoading,
     error: brewError,
     refreshData,
-    totalCount 
+    totalCount
   } = useBrewPackages();
 
   const currentCategory = steps[currentStep].id as ToolCategory | 'review' | 'templates';
-  
+
   // Reset showAllTools when changing categories
   useEffect(() => {
     setShowAllTools(false);
     setSearchQuery('');
   }, [currentStep]);
-  
+
   // Update log when Homebrew data loads
   useEffect(() => {
     if (!brewLoading && totalCount > 0) {
@@ -101,7 +101,7 @@ const Configurator = () => {
       updateLog('error loading packages - using cached data');
     }
   }, [brewLoading, totalCount, brewError]);
-  
+
   // Keyboard shortcuts - CMD+Left for back, CMD+Right for next
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -134,13 +134,13 @@ const Configurator = () => {
   const updateLog = (message: string) => {
     setLiveLog(message);
   };
-  
+
   const filteredTools = useMemo(() => {
     if (currentCategory === 'review' || currentCategory === 'templates') return [];
-    
+
     // Enhance static tools with Homebrew data (homepage URLs, etc.)
     const enhancedStaticTools = enhanceToolsWithBrewData(tools, brewPackages);
-    
+
     // If searching, search across ALL tools
     if (debouncedSearchQuery.trim()) {
       // Get all tools from all categories
@@ -157,7 +157,7 @@ const Configurator = () => {
         version: pkg.version,
         popular: pkg.popular,
       } as Tool));
-      
+
       // Combine and deduplicate by install command (prefer enhanced static tools)
       const toolMap = new Map<string, Tool>();
       allStaticTools.forEach(tool => toolMap.set(tool.installCommand, tool));
@@ -166,9 +166,9 @@ const Configurator = () => {
           toolMap.set(tool.installCommand, tool);
         }
       });
-      
+
       const allTools = Array.from(toolMap.values());
-      
+
       // Use fuzzy search with optimized configuration
       const fuse = new Fuse(allTools, {
         keys: [
@@ -182,57 +182,57 @@ const Configurator = () => {
         ignoreLocation: true,                   // Match anywhere in the string
         useExtendedSearch: false,
       });
-      
+
       let searchResults = fuse.search(debouncedSearchQuery)
         .map(result => result.item);
-      
+
       // Deduplicate by normalized name (filter out beta/nightly/dev variants)
       const seenNames = new Map<string, Tool>();
       searchResults = searchResults.filter(tool => {
         const normalizedName = tool.name.toLowerCase().replace(/[\s-]/g, '');
         const isBetaVariant = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(tool.installCommand);
-        
+
         if (!seenNames.has(normalizedName)) {
           seenNames.set(normalizedName, tool);
           return true;
         }
-        
+
         // If we've seen this name, only keep it if the existing one is a beta variant and this isn't
         const existing = seenNames.get(normalizedName)!;
         const existingIsBeta = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(existing.installCommand);
-        
+
         if (existingIsBeta && !isBetaVariant) {
           seenNames.set(normalizedName, tool);
           return true;
         }
-        
+
         return false;
       });
-      
+
       // Sort: exact name match > popular > alphabetically
       searchResults.sort((a, b) => {
         const aNameLower = a.name.toLowerCase();
         const bNameLower = b.name.toLowerCase();
         const queryLower = debouncedSearchQuery.toLowerCase();
-        
+
         const aExactName = aNameLower === queryLower;
         const bExactName = bNameLower === queryLower;
         const aStartsWith = aNameLower.startsWith(queryLower);
         const bStartsWith = bNameLower.startsWith(queryLower);
-        
+
         if (aExactName && !bExactName) return -1;
         if (!aExactName && bExactName) return 1;
         if (aStartsWith && !bStartsWith) return -1;
         if (!aStartsWith && bStartsWith) return 1;
         if (a.popular && !b.popular) return -1;
         if (!a.popular && b.popular) return 1;
-        
+
         return a.name.localeCompare(b.name);
       });
-      
+
       return searchResults;
     }
-    
+
     // When NOT searching, filter by current category
     const categoryBrewPackages = brewPackages
       .filter(pkg => pkg.category === currentCategory)
@@ -248,9 +248,9 @@ const Configurator = () => {
         version: pkg.version,
         popular: pkg.popular,
       } as Tool));
-    
+
     const staticTools = enhancedStaticTools.filter(t => t.category === currentCategory);
-    
+
     // Combine and deduplicate by install command (prefer static tools)
     const toolMap = new Map<string, Tool>();
     staticTools.forEach(tool => toolMap.set(tool.installCommand, tool));
@@ -259,44 +259,44 @@ const Configurator = () => {
         toolMap.set(tool.installCommand, tool);
       }
     });
-    
+
     let allTools = Array.from(toolMap.values());
-    
+
     // Deduplicate by normalized name (filter out beta/nightly/dev variants)
     const seenNames = new Map<string, Tool>();
     allTools = allTools.filter(tool => {
       const normalizedName = tool.name.toLowerCase().replace(/[\s-]/g, '');
       const isBetaVariant = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(tool.installCommand);
-      
+
       if (!seenNames.has(normalizedName)) {
         seenNames.set(normalizedName, tool);
         return true;
       }
-      
+
       // If we've seen this name, only keep it if the existing one is a beta variant and this isn't
       const existing = seenNames.get(normalizedName)!;
       const existingIsBeta = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(existing.installCommand);
-      
+
       if (existingIsBeta && !isBetaVariant) {
         seenNames.set(normalizedName, tool);
         return true;
       }
-      
+
       return false;
     });
-    
+
     // For 'dev-picks' category (Dev Picks), only show tools with devPick: true
     if (currentCategory === 'dev-picks') {
       allTools = allTools.filter(tool => tool.devPick === true);
     }
-    
+
     // Sort: popular first, then alphabetically
     allTools.sort((a, b) => {
       if (a.popular && !b.popular) return -1;
       if (!a.popular && b.popular) return 1;
       return a.name.localeCompare(b.name);
     });
-    
+
     // If not showing all, limit to popular tools
     if (!showAllTools) {
       const popularTools = allTools.filter(t => t.popular);
@@ -307,7 +307,7 @@ const Configurator = () => {
         allTools = allTools.slice(0, 30);
       }
     }
-    
+
     return allTools;
   }, [currentCategory, debouncedSearchQuery, brewPackages, showAllTools]);
 
@@ -351,7 +351,7 @@ const Configurator = () => {
   const selectAllInCategory = () => {
     const categoryTools = tools.filter(t => t.category === currentCategory);
     const toolsToAdd = categoryTools.filter(tool => !isToolSelected(tool));
-    
+
     setSelection(prev => ({
       ...prev,
       tools: [...prev.tools, ...toolsToAdd],
@@ -402,15 +402,15 @@ const Configurator = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     updateLog('generating script...');
-    
+
     confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
     });
-    
+
     toast.success('🎉 Setup script downloaded!', {
       description: 'Run it with: bash setup-macos.sh',
     });
@@ -449,17 +449,6 @@ const Configurator = () => {
     <PageLayout>
       {/* Header */}
       <header className="flex-shrink-0 px-6 py-6 border-b border-gray-50 dark:border-[#262626] flex flex-col justify-center">
-        {/* Back to Home Link */}
-        <div className="mb-4">
-          <button 
-            onClick={() => navigate('/')}
-            className="inline-flex items-center text-xs font-bold text-gray-400 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors uppercase tracking-wider group"
-          >
-            <ArrowLeft className="mr-1 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
-          </button>
-        </div>
-
         <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight mb-1.5">{steps[currentStep].name}</h1>
@@ -545,33 +534,33 @@ const Configurator = () => {
               className="mb-8"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {templates.map((template) => (
-                <motion.button
-                  key={template.id}
-                  onClick={() => applyTemplate(template.id)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group relative p-4 rounded-lg border-2 border-gray-200 dark:border-[#262626] hover:border-blue-500 dark:hover:border-blue-400 bg-white dark:bg-[#111111] hover:bg-gray-50 dark:hover:bg-[#1A1A1A] transition-all text-left"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
-                  <div className="relative">
-                    <h3 className="font-bold text-lg mb-1.5 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {template.name}
-                    </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 leading-snug">
-                      {template.description}
-                    </p>
-                    {template.toolIds.length > 0 && (
-                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-500 dark:text-gray-400">
-                        <Check className="h-3 w-3" />
-                        <span>{template.toolIds.length} tools included</span>
-                      </div>
-                    )}
-                  </div>
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
+                {templates.map((template) => (
+                  <motion.button
+                    key={template.id}
+                    onClick={() => applyTemplate(template.id)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group relative p-4 rounded-lg border-2 border-gray-200 dark:border-[#262626] hover:border-blue-500 dark:hover:border-blue-400 bg-white dark:bg-[#111111] hover:bg-gray-50 dark:hover:bg-[#1A1A1A] transition-all text-left"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+                    <div className="relative">
+                      <h3 className="font-bold text-lg mb-1.5 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {template.name}
+                      </h3>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 leading-snug">
+                        {template.description}
+                      </p>
+                      {template.toolIds.length > 0 && (
+                        <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-500 dark:text-gray-400">
+                          <Check className="h-3 w-3" />
+                          <span>{template.toolIds.length} tools included</span>
+                        </div>
+                      )}
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
           )}
 
           {/* Grid or Review */}
@@ -587,21 +576,21 @@ const Configurator = () => {
                 {filteredTools.length > 0 ? (
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-6">
-                    {filteredTools.map((tool, index) => (
-                      <motion.div
-                        key={tool.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.02, duration: 0.3 }}
-                      >
-                        <ToolCard
-                          tool={tool}
-                          selected={isToolSelected(tool)}
-                          onToggle={() => toggleTool(tool)}
-                        />
-                      </motion.div>
-                    ))}
-                    
+                      {filteredTools.map((tool, index) => (
+                        <motion.div
+                          key={tool.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.02, duration: 0.3 }}
+                        >
+                          <ToolCard
+                            tool={tool}
+                            selected={isToolSelected(tool)}
+                            onToggle={() => toggleTool(tool)}
+                          />
+                        </motion.div>
+                      ))}
+
                       {/* Request a Tool Card */}
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -617,7 +606,7 @@ const Configurator = () => {
                         <div className="relative overflow-hidden rounded-lg h-[160px] flex flex-col border-2 border-dashed border-gray-300 dark:border-[#262626] hover:border-blue-500 dark:hover:border-blue-400 bg-gray-50 dark:bg-[#0A0A0A] hover:bg-gray-100 dark:hover:bg-[#111111] transition-all duration-200">
                           {/* Top border */}
                           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-[#262626] to-[#404040]" />
-                          
+
                           <div className="relative z-10 p-3.5 flex-1 flex flex-col items-center justify-center text-center gap-2">
                             <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-[#1A1A1A] border-2 border-dashed border-gray-300 dark:border-[#262626] group-hover:border-blue-500 dark:group-hover:border-blue-400 flex items-center justify-center transition-colors">
                               <span className="text-lg">➕</span>
@@ -632,7 +621,7 @@ const Configurator = () => {
                         </div>
                       </motion.div>
                     </div>
-                    
+
                     {/* Show All Tools Button */}
                     {!searchQuery && !showAllTools && (
                       <motion.div
@@ -725,9 +714,9 @@ const Configurator = () => {
       <FloatingFooter
         statusLabel={footerStatus.label}
         statusText={footerStatus.text}
-        showBackButton={currentStep > 0}
-        backButtonText="Back"
-        onBack={handleBack}
+        showBackButton={true}
+        backButtonText={currentCategory === 'templates' ? 'Back to Home' : 'Back'}
+        onBack={currentCategory === 'templates' ? () => navigate('/') : handleBack}
         primaryButtonText={getPrimaryButtonText()}
         primaryButtonIcon={getPrimaryButtonIcon()}
         onPrimaryAction={currentStep < steps.length - 1 ? handleNext : handleDownloadScript}
