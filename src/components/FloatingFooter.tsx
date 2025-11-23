@@ -16,6 +16,7 @@ interface FloatingFooterProps {
   primaryButtonDisabled?: boolean;
   showThemeToggle?: boolean;
   showKeyboardShortcuts?: boolean;
+  customActions?: React.ReactNode;
 }
 
 const Kbd = ({ children, variant = 'dark' }: { children: React.ReactNode; variant?: 'dark' | 'light' }) => {
@@ -41,6 +42,7 @@ export const FloatingFooter = ({
   primaryButtonDisabled = false,
   showThemeToggle = true,
   showKeyboardShortcuts = true,
+  customActions,
 }: FloatingFooterProps) => {
   const navigate = useNavigate();
 
@@ -88,33 +90,39 @@ export const FloatingFooter = ({
             </div>
           )}
 
-          {/* Back Button with Keyboard Shortcut */}
-          {showBackButton && onBack && (
-            <button
-              onClick={onBack}
-              className="group relative flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#374151] hover:bg-[#4B5563] transition-all duration-200"
-            >
-              <span className="flex items-center gap-0.5">
-                <Kbd variant="dark">⌘</Kbd>
-                <Kbd variant="dark">←</Kbd>
-              </span>
-              <span className="text-sm font-medium text-white">{backButtonText}</span>
-            </button>
-          )}
+          {customActions ? (
+            customActions
+          ) : (
+            <>
+              {/* Back Button with Keyboard Shortcut */}
+              {showBackButton && onBack && (
+                <button
+                  onClick={onBack}
+                  className="group relative flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#374151] hover:bg-[#4B5563] transition-all duration-200"
+                >
+                  <span className="flex items-center gap-0.5">
+                    <Kbd variant="dark">⌘</Kbd>
+                    <Kbd variant="dark">←</Kbd>
+                  </span>
+                  <span className="text-sm font-medium text-white">{backButtonText}</span>
+                </button>
+              )}
 
-          {/* Primary Button with Keyboard Shortcut */}
-          <Button
-            onClick={onPrimaryAction}
-            disabled={primaryButtonDisabled}
-            className="group relative bg-white hover:bg-gray-100 text-black font-bold py-2.5 px-6 rounded-lg text-sm flex items-center gap-2 transition-all duration-200 shadow-lg transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {primaryButtonIcon}
-            <span>{primaryButtonText}</span>
-            <span className="flex items-center gap-0.5 ml-2">
-              <Kbd variant="light">⌘</Kbd>
-              <Kbd variant="light">→</Kbd>
-            </span>
-          </Button>
+              {/* Primary Button with Keyboard Shortcut */}
+              <Button
+                onClick={onPrimaryAction}
+                disabled={primaryButtonDisabled}
+                className="group relative bg-white hover:bg-gray-100 text-black font-bold py-2.5 px-6 rounded-lg text-sm flex items-center gap-2 transition-all duration-200 shadow-lg transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {primaryButtonIcon}
+                <span>{primaryButtonText}</span>
+                <span className="flex items-center gap-0.5 ml-2">
+                  <Kbd variant="light">⌘</Kbd>
+                  <Kbd variant="light">→</Kbd>
+                </span>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
