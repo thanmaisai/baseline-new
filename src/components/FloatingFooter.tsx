@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { useThemeTokens } from '@/theme/useThemeTokens';
 
 interface FloatingFooterProps {
   branding?: string;
@@ -45,10 +46,25 @@ export const FloatingFooter = ({
   customActions,
 }: FloatingFooterProps) => {
   const navigate = useNavigate();
+  const { brand, colors, isDark } = useThemeTokens();
+
+  const shellStyles = {
+    backgroundColor: isDark ? colors.background.secondary : brand.ink,
+    color: isDark ? colors.text.primary : '#FFFFFF',
+    borderColor: isDark ? colors.border.default : brand.ink,
+  };
+
+  const primaryButtonStyles = {
+    backgroundColor: brand.sunset,
+    color: brand.ink,
+  };
 
   return (
     <div className="fixed bottom-8 left-0 right-0 z-50 flex justify-center px-4">
-      <div className="bg-[#1A1A1A] text-white rounded-2xl py-3 px-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] flex items-center justify-between gap-6 border border-[#374151] ring-1 ring-white/10 w-auto whitespace-nowrap">
+      <div
+        className="rounded-2xl py-3 px-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] flex items-center justify-between gap-6 border ring-1 ring-white/10 w-auto whitespace-nowrap backdrop-blur-xl"
+        style={shellStyles}
+      >
 
         {/* Branding + Status Container */}
         <div className="flex items-center gap-6">
@@ -57,7 +73,7 @@ export const FloatingFooter = ({
             <button
               tabIndex={0}
               onClick={() => navigate('/')}
-              className="text-lg font-bold tracking-tight text-white hover:underline hover:text-blue-400 focus:outline-none rounded focus:ring-2 focus:ring-blue-400 px-0.5"
+              className="text-lg font-bold tracking-tight hover:underline focus:outline-none rounded focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               {branding}
@@ -68,12 +84,12 @@ export const FloatingFooter = ({
           <div className="h-8 w-px bg-[#374151] hidden md:block"></div>
 
           {/* Status Info */}
-          <div className="hidden md:flex flex-col py-1">
-            <span className="text-[10px] font-bold tracking-widest text-[#9CA3AF] uppercase mb-0.5">
+          <div className="hidden md:flex flex-col py-1 opacity-80">
+            <span className="text-[10px] font-bold tracking-widest uppercase mb-0.5">
               {statusLabel}
             </span>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-white">{statusText}</span>
+              <span className="text-sm font-medium">{statusText}</span>
             </div>
           </div>
         </div>
@@ -83,7 +99,7 @@ export const FloatingFooter = ({
           {/* Theme Toggle - Moved before Back button */}
           {showThemeToggle && (
             <div className="flex items-center">
-              <div className="h-8 w-px bg-[#374151] mr-3"></div>
+              <div className="h-8 w-px bg-white/20 mr-3"></div>
               <div className="[&_button]:text-white [&_button]:hover:text-white [&_button]:hover:bg-white/10 [&_button]:h-8 [&_button]:w-8">
                 <ThemeToggle />
               </div>

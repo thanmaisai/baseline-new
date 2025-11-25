@@ -12,6 +12,7 @@ export const useThemeTokens = () => {
   return {
     colors: isDark ? themeTokens.colors.dark : themeTokens.colors.light,
     shared: themeTokens.colors.shared,
+    brand: themeTokens.colors.brand,
     footer: themeTokens.colors.footer,
     spacing: themeTokens.spacing,
     borderRadius: themeTokens.borderRadius,

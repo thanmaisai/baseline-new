@@ -1,4 +1,3 @@
-import { Terminal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
 import { motion } from 'framer-motion';
@@ -21,8 +20,17 @@ export const PageHeader = ({ showGithub = true }: PageHeaderProps) => {
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => navigate('/')}
           >
-            <Terminal className="w-6 h-6" />
-            <span className="text-lg font-medium tracking-tight">Baseline</span>
+            <img
+              src="/brand/baseline-mark-192.png"
+              alt="Baseline mark"
+              className="w-9 h-9 rounded-2xl shadow-card border border-white/40 dark:border-white/10"
+            />
+            <div className="leading-tight">
+              <span className="text-lg font-semibold tracking-tight block">Baseline</span>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground block">
+                Mac Setup Studio
+              </span>
+            </div>
           </motion.div>
           
           <motion.div

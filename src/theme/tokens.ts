@@ -6,6 +6,12 @@
 
 export const themeTokens = {
   colors: {
+    brand: {
+      sand: '#FAF3E1',
+      dunes: '#F5E7C6',
+      sunset: '#FF6D1F',
+      ink: '#222222',
+    },
     // Light Mode
     light: {
       background: {

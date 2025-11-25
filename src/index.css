@@ -71,6 +71,12 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Baseline brand palette */
+    --brand-sand: #FAF3E1;
+    --brand-dunes: #F5E7C6;
+    --brand-sunset: #FF6D1F;
+    --brand-ink: #222222;
   }
 
   .dark {
@@ -123,6 +129,11 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 15%;
     --sidebar-ring: 0 0% 80%;
+
+    --brand-sand: #FAF3E1;
+    --brand-dunes: #F5E7C6;
+    --brand-sunset: #FF6D1F;
+    --brand-ink: #222222;
   }
 }
 

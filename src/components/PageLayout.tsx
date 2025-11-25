@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { useThemeTokens } from '@/theme/useThemeTokens';
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -6,6 +7,8 @@ interface PageLayoutProps {
 }
 
 export const PageLayout = ({ children, className = '' }: PageLayoutProps) => {
+  const { colors, brand, isDark } = useThemeTokens();
+
   return (
     <div className="bg-gray-50 dark:bg-black min-h-screen flex flex-col items-center justify-center p-4 md:p-6 relative overflow-hidden">
       {/* Subtle Grid Background */}
