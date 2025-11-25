@@ -77,9 +77,9 @@ const Index = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-[var(--brand-sand)] text-foreground pb-32">
-      <PageLayout className="h-auto min-h-[85vh]">
-        <div className="flex flex-col gap-12 px-6 md:px-10 py-10 overflow-y-auto">
+    <>
+      <PageLayout className="h-auto min-h-screen">
+        <div className="flex flex-col gap-12 px-6 md:px-10 py-10 pb-32 overflow-y-auto">
           <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -285,7 +285,7 @@ const Index = () => {
         secondaryButtonIcon={<Upload className="w-4 h-4" />}
         onSecondaryAction={() => navigate('/export-setup')}
       />
-    </div>
+    </>
   );
 };
 
