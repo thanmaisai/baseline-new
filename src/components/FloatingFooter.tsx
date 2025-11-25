@@ -151,7 +151,7 @@ export const FloatingFooter = ({
             {showKeyboardShortcuts && (
               <span className="flex items-center gap-0.5 ml-2">
                 <Kbd variant="orange">⌘</Kbd>
-                <Kbd variant="orange">{primaryShortcut || '→'}</Kbd>
+                <Kbd variant="orange">{primaryShortcut === 'Enter' ? '↩' : (primaryShortcut || '→')}</Kbd>
               </span>
             )}
           </button>
