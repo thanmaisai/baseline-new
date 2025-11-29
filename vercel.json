@@ -2,5 +2,11 @@
   "alias": ["mac-baseline.vercel.app"],
   "github": {
     "silent": true
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
