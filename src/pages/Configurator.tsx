@@ -286,6 +286,55 @@ const Configurator = () => {
     }
 
     // When NOT searching, filter by current category
+    // Special handling for dev-picks: get tools with devPick flag from ALL categories
+    if (currentCategory === 'dev-picks') {
+      // Get all tools with devPick flag, regardless of category
+      let devPickTools = enhancedStaticTools.filter(t => t.devPick === true);
+
+      // Deduplicate by normalized name (filter out beta/nightly/dev variants)
+      const seenNames = new Map<string, Tool>();
+      devPickTools = devPickTools.filter(tool => {
+        const normalizedName = tool.name.toLowerCase().replace(/[\s-]/g, '');
+        const isBetaVariant = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(tool.installCommand);
+
+        if (!seenNames.has(normalizedName)) {
+          seenNames.set(normalizedName, tool);
+          return true;
+        }
+
+        // If we've seen this name, only keep it if the existing one is a beta variant and this isn't
+        const existing = seenNames.get(normalizedName)!;
+        const existingIsBeta = /-(beta|nightly|dev|preview|alpha|rc|canary)/.test(existing.installCommand);
+
+        if (existingIsBeta && !isBetaVariant) {
+          seenNames.set(normalizedName, tool);
+          return true;
+        }
+
+        return false;
+      });
+
+      // Sort: popular first, then alphabetically
+      devPickTools.sort((a, b) => {
+        if (a.popular && !b.popular) return -1;
+        if (!a.popular && b.popular) return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      // Apply "show all" filter
+      if (!showAllTools) {
+        const popularTools = devPickTools.filter(t => t.popular);
+        if (popularTools.length >= 10) {
+          devPickTools = popularTools.slice(0, 50);
+        } else {
+          devPickTools = devPickTools.slice(0, 30);
+        }
+      }
+
+      return devPickTools;
+    }
+
+    // Regular category filtering
     const categoryBrewPackages = brewPackages
       .filter(pkg => pkg.category === currentCategory)
       .map(pkg => ({
@@ -336,11 +385,6 @@ const Configurator = () => {
 
       return false;
     });
-
-    // For 'dev-picks' category (Dev Picks), only show tools with devPick: true
-    if (currentCategory === 'dev-picks') {
-      allTools = allTools.filter(tool => tool.devPick === true);
-    }
 
     // Sort: popular first, then alphabetically
     allTools.sort((a, b) => {
