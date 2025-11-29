@@ -1,0 +1,6 @@
+{
+  "alias": ["mac-baseline.vercel.app"],
+  "github": {
+    "silent": true
+  }
+}
