@@ -715,50 +715,60 @@ const Configurator = () => {
             ) : currentCategory === 'review' ? (
               <motion.div
                 key="review"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                className="space-y-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="max-w-2xl mx-auto py-12"
               >
-                <div className="bg-gray-50 dark:bg-[#0A0A0A] backdrop-blur border border-gray-200 dark:border-[#262626] rounded-xl p-8 text-center flex flex-col items-center justify-center min-h-[300px]">
-                  <p className="text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400 mb-4">
-                    READY TO INITIALIZE
-                  </p>
-                  <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white">
-                    {selection.tools.length} {selection.tools.length === 1 ? 'tool' : 'tools'} selected.
-                  </h3>
-                  <p className="text-base text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                    We're ready to compile your setup script. Review your choices or go back to make changes.
-                  </p>
-                  <div className="flex flex-wrap gap-1.5 justify-center max-w-3xl">
-                    {Array.from(selection.tools).map(tool => (
-                      <span
-                        key={tool.id}
-                        className="px-2.5 py-1 rounded-md border border-gray-200 dark:border-[#262626] text-[10px] font-mono text-gray-600 dark:text-gray-400 bg-white dark:bg-[#111111] hover:bg-gray-100 dark:hover:bg-[#1A1A1A] transition-colors cursor-default"
-                      >
-                        {tool.name}
-                      </span>
-                    ))}
-                  </div>
-
-                  {selection.tools.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      className="mt-8"
-                    >
-                      <Button
-                        size="lg"
-                        onClick={handleDownloadScript}
-                        className="h-11 px-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 font-medium shadow-lg text-base group"
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Download Setup Script
-                      </Button>
-                    </motion.div>
-                  )}
+                {/* Header */}
+                <div className="text-center mb-12">
+                  <h2 className="text-5xl font-black text-[hsl(var(--foreground))] mb-3">
+                    {selection.tools.length} {selection.tools.length === 1 ? 'Tool' : 'Tools'}
+                  </h2>
+                  <p className="text-base text-[hsl(var(--muted-foreground))] font-medium">Ready to install on your Mac</p>
                 </div>
+                
+                {/* Tools Grid */}
+                <div className="flex flex-wrap gap-2.5 justify-center mb-16">
+                  {Array.from(selection.tools).map(tool => (
+                    <span
+                      key={tool.id}
+                      className="px-4 py-2 rounded-lg bg-[hsl(var(--card))] border border-[hsl(var(--border))] text-sm font-medium text-[hsl(var(--foreground))] hover:border-[hsl(var(--primary))] transition-colors"
+                    >
+                      {tool.name}
+                    </span>
+                  ))}
+                </div>
+
+                {selection.tools.length > 0 && (
+                  <>
+                    {/* Commands Section */}
+                    <div className="space-y-6 mb-12">
+                      <div>
+                        <p className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-2">Make executable</p>
+                        <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-lg p-4">
+                          <code className="font-mono text-sm text-[hsl(var(--foreground))]">chmod +x setup-macos.sh</code>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-2">Run script</p>
+                        <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-lg p-4">
+                          <code className="font-mono text-sm text-[hsl(var(--foreground))]">./setup-macos.sh</code>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Download Button */}
+                    <button
+                      onClick={handleDownloadScript}
+                      className="w-full h-14 bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))]/90 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl"
+                    >
+                      <Download className="h-5 w-5" />
+                      Download Setup Script
+                    </button>
+                  </>
+                )}
               </motion.div>
             ) : null}
           </AnimatePresence>
