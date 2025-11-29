@@ -466,198 +466,204 @@ const ExportSetup = () => {
 
           {/* Step 3: Analyze & Generate */}
           {currentStep === 3 && (
-            <section className="animate-in fade-in duration-500 pb-12">
-              <div className="flex items-start mb-10">
+            <section className="animate-in fade-in duration-500 pb-6">
+              <div className="flex items-start mb-8">
                 <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-[var(--brand-sunset)] text-[var(--brand-ink)] flex items-center justify-center font-bold mr-5 text-xl shadow-lg">
                   3
                 </div>
                 <div className="pt-1.5">
-                  <h2 className="text-2xl font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-sand)] mb-2 tracking-tight">Analyze & Generate Setup Script</h2>
-                  <p className="text-[var(--brand-ink)]/60 dark:text-[var(--brand-sand)]/60 text-base max-w-2xl">We'll analyze your scan and create a custom installation script for your new Mac.</p>
+                  <h2 className="text-2xl font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-sand)] mb-2 tracking-tight">Setup Script Preview</h2>
+                  <p className="text-[var(--brand-ink)]/60 dark:text-[var(--brand-sand)]/60 text-base max-w-2xl">Your custom setup script is ready. Review what will be installed on your new Mac.</p>
                 </div>
               </div>
 
-              <div 
-                className="ml-0 md:ml-17 bg-[var(--brand-ink)] dark:bg-black rounded-2xl p-8 md:p-10 text-[var(--brand-sand)] shadow-2xl relative overflow-hidden border"
-                style={{ borderColor: borderColors.cardInner }}
-              >
-                {/* Decorative gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--brand-sunset)]/10 via-transparent to-[var(--brand-sunset)]/5 pointer-events-none" />
-                
-                <div className="relative z-10">
-                  <h3 className="text-xl font-semibold mb-6 text-[var(--brand-sand)]">Setup Script Preview</h3>
-                  
-                  {/* Stats Grid */}
-                  {parsedData ? (
-                    <>
-                      <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="ml-0 md:ml-17 space-y-5">
+                {parsedData ? (
+                  <>
+                    {/* Combined Stats and Configuration - Side by Side */}
+                    <div className="grid md:grid-cols-[200px_1fr] gap-5">
+                      {/* Stats - Compact Vertical */}
+                      <div className="space-y-3">
                         <div 
-                          className="bg-[var(--brand-sand)]/5 rounded-xl p-4 backdrop-blur-sm border"
-                          style={{ borderColor: borderColors.cardInner }}
+                          className="bg-[var(--brand-sand)]/20 dark:bg-[var(--brand-ink)]/20 rounded-xl p-4 border"
+                          style={{ borderColor: borderColors.card }}
                         >
-                          <div className="text-3xl font-bold mb-1.5 text-[var(--brand-sand)]">
+                          <div className="text-2xl font-bold mb-1 text-[var(--brand-ink)] dark:text-[var(--brand-sand)]">
                             {(parsedData.package_managers.homebrew?.formulae?.length || 0) + 
                              (parsedData.package_managers.homebrew?.casks?.length || 0)}
                           </div>
-                          <div className="text-[10px] text-[var(--brand-sand)]/50 uppercase tracking-[0.2em] font-bold">Packages</div>
+                          <div className="text-[10px] text-[var(--brand-ink)]/60 dark:text-[var(--brand-sand)]/60 uppercase tracking-wider font-semibold">Packages</div>
                         </div>
                         <div 
-                          className="bg-[var(--brand-sand)]/5 rounded-xl p-4 backdrop-blur-sm border"
-                          style={{ borderColor: borderColors.cardInner }}
+                          className="bg-[var(--brand-sand)]/20 dark:bg-[var(--brand-ink)]/20 rounded-xl p-4 border"
+                          style={{ borderColor: borderColors.card }}
                         >
-                          <div className="text-3xl font-bold mb-1.5 text-[var(--brand-sand)]">
+                          <div className="text-2xl font-bold mb-1 text-[var(--brand-ink)] dark:text-[var(--brand-sand)]">
                             {parsedData.development.vscode?.extensions?.length || 0}
                           </div>
-                          <div className="text-[10px] text-[var(--brand-sand)]/50 uppercase tracking-[0.2em] font-bold">VS Code Ext.</div>
+                          <div className="text-[10px] text-[var(--brand-ink)]/60 dark:text-[var(--brand-sand)]/60 uppercase tracking-wider font-semibold">Extensions</div>
                         </div>
                         <div 
-                          className="bg-[var(--brand-sand)]/5 rounded-xl p-4 backdrop-blur-sm border"
-                          style={{ borderColor: borderColors.cardInner }}
+                          className="bg-[var(--brand-sand)]/20 dark:bg-[var(--brand-ink)]/20 rounded-xl p-4 border"
+                          style={{ borderColor: borderColors.card }}
                         >
-                          <div className="text-3xl font-bold mb-1.5 text-[var(--brand-sunset)]">100%</div>
-                          <div className="text-[10px] text-[var(--brand-sand)]/50 uppercase tracking-[0.2em] font-bold">Automated</div>
-                        </div>
-                      </div>
-
-                      {/* What's Included - Dynamic from JSON */}
-                      <div 
-                        className="bg-[var(--brand-sand)]/5 rounded-xl p-5 backdrop-blur-sm border mb-6"
-                        style={{ borderColor: borderColors.cardInner }}
-                      >
-                        <h4 className="font-bold text-xs mb-4 uppercase tracking-[0.2em] text-[var(--brand-sand)]/70">Detected Configuration:</h4>
-                        <div className="space-y-3">
-                            {/* Homebrew Section */}
-                            {parsedData.package_managers.homebrew && (
-                              <div>
-                                <div className="text-xs text-[var(--brand-sunset)] font-bold mb-2.5 tracking-wide">📦 HOMEBREW</div>
-                                <div className="grid grid-cols-2 gap-3 text-sm ml-5">
-                                  {parsedData.package_managers.homebrew.formulae?.length > 0 && (
-                                    <div className="flex items-center gap-2.5">
-                                      <div className="w-2 h-2 rounded-full bg-[var(--brand-sunset)]"></div>
-                                      <span className="text-[var(--brand-sand)]/80">{parsedData.package_managers.homebrew.formulae.length} formulae</span>
-                                    </div>
-                                  )}
-                                  {parsedData.package_managers.homebrew.casks?.length > 0 && (
-                                    <div className="flex items-center gap-2.5">
-                                      <div className="w-2 h-2 rounded-full bg-[var(--brand-sunset)]"></div>
-                                      <span className="text-[var(--brand-sand)]/80">{parsedData.package_managers.homebrew.casks.length} applications</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* VS Code Section */}
-                            {parsedData.development.vscode?.extensions?.length > 0 && (
-                              <div>
-                                <div className="text-xs text-[var(--brand-sunset)] font-bold mb-2.5 tracking-wide">💻 VS CODE</div>
-                                <div className="text-sm ml-5">
-                                  <div className="flex items-center gap-2.5">
-                                    <div className="w-2 h-2 rounded-full bg-[var(--brand-sunset)]"></div>
-                                    <span className="text-[var(--brand-sand)]/80">{parsedData.development.vscode.extensions.length} extensions</span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Languages Section */}
-                            {(parsedData.languages.node?.global_packages?.length > 0 || 
-                              parsedData.languages.python?.pip_packages?.length > 0) && (
-                              <div>
-                                <div className="text-xs text-[var(--brand-sunset)] font-bold mb-2.5 tracking-wide">🔧 LANGUAGES</div>
-                                <div className="grid grid-cols-2 gap-3 text-sm ml-5">
-                                  {parsedData.languages.node?.global_packages?.length > 0 && (
-                                    <div className="flex items-center gap-2.5">
-                                      <div className="w-2 h-2 rounded-full bg-[var(--brand-sunset)]"></div>
-                                      <span className="text-[var(--brand-sand)]/80">Node.js packages</span>
-                                    </div>
-                                  )}
-                                  {parsedData.languages.python?.pip_packages?.length > 0 && (
-                                    <div className="flex items-center gap-2.5">
-                                      <div className="w-2 h-2 rounded-full bg-[var(--brand-sunset)]"></div>
-                                      <span className="text-[var(--brand-sand)]/80">Python packages</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Git Section */}
-                            {parsedData.development.git?.global_config && (
-                              <div>
-                                <div className="text-xs text-[var(--brand-sunset)] font-bold mb-2.5 tracking-wide">🔗 GIT</div>
-                                <div className="text-sm ml-5">
-                                  <div className="flex items-center gap-2.5">
-                                    <div className="w-2 h-2 rounded-full bg-[var(--brand-sunset)]"></div>
-                                    <span className="text-[var(--brand-sand)]/80">Global configuration</span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Shell Section */}
-                            {Object.keys(parsedData.terminal.shell_configs || {}).length > 0 && (
-                              <div>
-                                <div className="text-xs text-[var(--brand-sunset)] font-bold mb-2.5 tracking-wide">⚡ SHELL</div>
-                                <div className="text-sm ml-5">
-                                  {Object.keys(parsedData.terminal.shell_configs).map(shell => (
-                                    <div key={shell} className="flex items-center gap-2.5 mb-1.5">
-                                      <div className="w-2 h-2 rounded-full bg-[var(--brand-sunset)]"></div>
-                                      <span className="text-[var(--brand-sand)]/80">{shell}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+                          <div className="text-2xl font-bold mb-1 text-[var(--brand-ink)] dark:text-[var(--brand-sand)]">
+                            {parsedData.applications?.length || 0}
                           </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="grid grid-cols-3 gap-4 mb-8">
-                        <div 
-                          className="bg-[var(--brand-sand)]/5 rounded-xl p-4 backdrop-blur-sm border"
-                          style={{ borderColor: borderColors.cardInner }}
-                        >
-                          <div className="text-3xl font-bold mb-1.5 text-[var(--brand-sand)]">—</div>
-                          <div className="text-[10px] text-[var(--brand-sand)]/50 uppercase tracking-[0.2em] font-bold">Packages</div>
-                        </div>
-                        <div 
-                          className="bg-[var(--brand-sand)]/5 rounded-xl p-4 backdrop-blur-sm border"
-                          style={{ borderColor: borderColors.cardInner }}
-                        >
-                          <div className="text-3xl font-bold mb-1.5 text-[var(--brand-sand)]">—</div>
-                          <div className="text-[10px] text-[var(--brand-sand)]/50 uppercase tracking-[0.2em] font-bold">Est. Minutes</div>
-                        </div>
-                        <div 
-                          className="bg-[var(--brand-sand)]/5 rounded-xl p-4 backdrop-blur-sm border"
-                          style={{ borderColor: borderColors.cardInner }}
-                        >
-                          <div className="text-3xl font-bold mb-1.5 text-[var(--brand-sunset)]">100%</div>
-                          <div className="text-[10px] text-[var(--brand-sand)]/50 uppercase tracking-[0.2em] font-bold">Automated</div>
+                          <div className="text-[10px] text-[var(--brand-ink)]/60 dark:text-[var(--brand-sand)]/60 uppercase tracking-wider font-semibold">Applications</div>
                         </div>
                       </div>
-                    )}
 
-                    {/* Terminal Preview */}
-                    <div 
-                      className="mt-6 bg-black/60 dark:bg-black/80 rounded-xl p-4 backdrop-blur-sm border"
-                      style={{ borderColor: borderColors.cardInner }}
-                    >
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                        <span className="ml-2 text-[11px] text-[var(--brand-sand)]/50 font-mono font-semibold">baseline-setup.sh</span>
-                      </div>
-                      <div className="font-mono text-sm text-[var(--brand-sunset)] space-y-1">
-                        <div>$ chmod +x baseline-setup.sh</div>
-                        <div>$ ./baseline-setup.sh</div>
-                        <div className="text-[var(--brand-sand)]/40"># Installing all your tools...</div>
+                      {/* Detected Configuration */}
+                      <div 
+                        className="bg-[var(--brand-sand)]/20 dark:bg-[var(--brand-ink)]/20 rounded-xl p-5 border"
+                        style={{ borderColor: borderColors.card }}
+                      >
+                        <h4 className="text-sm font-bold mb-4 uppercase tracking-wider text-[var(--brand-ink)]/70 dark:text-[var(--brand-sand)]/70">Detected Configuration</h4>
+                        <div className="space-y-3">
+                          {/* Homebrew Section */}
+                          {parsedData.package_managers.homebrew && (
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="font-bold uppercase tracking-wider text-[var(--brand-sunset)] min-w-[100px]">Homebrew</span>
+                              <div className="flex items-center gap-4 text-[var(--brand-ink)]/70 dark:text-[var(--brand-sand)]/70">
+                                {parsedData.package_managers.homebrew.formulae?.length > 0 && (
+                                  <span>{parsedData.package_managers.homebrew.formulae.length} formulae</span>
+                                )}
+                                {parsedData.package_managers.homebrew.casks?.length > 0 && (
+                                  <span>{parsedData.package_managers.homebrew.casks.length} applications</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* VS Code Section */}
+                          {parsedData.development.vscode?.extensions?.length > 0 && (
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="font-bold uppercase tracking-wider text-[var(--brand-sunset)] min-w-[100px]">VS Code</span>
+                              <span className="text-[var(--brand-ink)]/70 dark:text-[var(--brand-sand)]/70">{parsedData.development.vscode.extensions.length} extensions</span>
+                            </div>
+                          )}
+
+                          {/* Languages Section */}
+                          {(parsedData.languages.node?.global_packages?.length > 0 || 
+                            parsedData.languages.python?.pip_packages?.length > 0) && (
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="font-bold uppercase tracking-wider text-[var(--brand-sunset)] min-w-[100px]">Languages</span>
+                              <div className="flex items-center gap-4 text-[var(--brand-ink)]/70 dark:text-[var(--brand-sand)]/70">
+                                {parsedData.languages.node?.global_packages?.length > 0 && (
+                                  <span>Node.js packages</span>
+                                )}
+                                {parsedData.languages.python?.pip_packages?.length > 0 && (
+                                  <span>Python packages</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Git Section */}
+                          {parsedData.development.git?.global_config && (
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="font-bold uppercase tracking-wider text-[var(--brand-sunset)] min-w-[100px]">Git</span>
+                              <span className="text-[var(--brand-ink)]/70 dark:text-[var(--brand-sand)]/70">Global configuration</span>
+                            </div>
+                          )}
+
+                          {/* Shell Section */}
+                          {Object.keys(parsedData.terminal.shell_configs || {}).length > 0 && (
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="font-bold uppercase tracking-wider text-[var(--brand-sunset)] min-w-[100px]">Shell</span>
+                              <div className="flex items-center gap-4 text-[var(--brand-ink)]/70 dark:text-[var(--brand-sand)]/70">
+                                {Object.keys(parsedData.terminal.shell_configs).map((shell, index) => (
+                                  <span key={shell}>{shell}{index < Object.keys(parsedData.terminal.shell_configs).length - 1 ? ',' : ''}</span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </section>
+
+                    {/* Terminal Preview - Refined */}
+                    <div 
+                      className="bg-[var(--brand-ink)] dark:bg-black rounded-xl p-4 border"
+                      style={{ borderColor: borderColors.card }}
+                    >
+                      <div className="flex items-center gap-2 mb-3 pb-3 border-b" style={{ borderColor: borderColors.cardInner }}>
+                        <div className="flex gap-1.5">
+                          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <span className="ml-2 text-xs text-[var(--brand-sand)] font-mono">baseline-setup.sh</span>
+                      </div>
+                      <div className="font-mono text-sm space-y-1.5">
+                        <div className="text-[var(--brand-sunset)]">$ chmod +x baseline-setup.sh</div>
+                        <div className="text-[var(--brand-sunset)]">$ ./baseline-setup.sh</div>
+                        <div className="text-[var(--brand-sand)]/70"># Installing all your tools...</div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Empty State - Compact Side by Side */}
+                    <div className="grid md:grid-cols-[200px_1fr] gap-5">
+                      {/* Stats - Compact Vertical */}
+                      <div className="space-y-3">
+                        <div 
+                          className="bg-[var(--brand-sand)]/20 dark:bg-[var(--brand-ink)]/20 rounded-xl p-4 border"
+                          style={{ borderColor: borderColors.card }}
+                        >
+                          <div className="text-2xl font-bold mb-1 text-[var(--brand-ink)]/30 dark:text-[var(--brand-sand)]/30">—</div>
+                          <div className="text-[10px] text-[var(--brand-ink)]/40 dark:text-[var(--brand-sand)]/40 uppercase tracking-wider font-semibold">Packages</div>
+                        </div>
+                        <div 
+                          className="bg-[var(--brand-sand)]/20 dark:bg-[var(--brand-ink)]/20 rounded-xl p-4 border"
+                          style={{ borderColor: borderColors.card }}
+                        >
+                          <div className="text-2xl font-bold mb-1 text-[var(--brand-ink)]/30 dark:text-[var(--brand-sand)]/30">—</div>
+                          <div className="text-[10px] text-[var(--brand-ink)]/40 dark:text-[var(--brand-sand)]/40 uppercase tracking-wider font-semibold">Extensions</div>
+                        </div>
+                        <div 
+                          className="bg-[var(--brand-sand)]/20 dark:bg-[var(--brand-ink)]/20 rounded-xl p-4 border"
+                          style={{ borderColor: borderColors.card }}
+                        >
+                          <div className="text-2xl font-bold mb-1 text-[var(--brand-ink)]/30 dark:text-[var(--brand-sand)]/30">—</div>
+                          <div className="text-[10px] text-[var(--brand-ink)]/40 dark:text-[var(--brand-sand)]/40 uppercase tracking-wider font-semibold">Applications</div>
+                        </div>
+                      </div>
+
+                      {/* Empty Configuration */}
+                      <div 
+                        className="bg-[var(--brand-sand)]/20 dark:bg-[var(--brand-ink)]/20 rounded-xl p-5 border flex items-center justify-center"
+                        style={{ borderColor: borderColors.card }}
+                      >
+                        <p className="text-sm text-[var(--brand-ink)]/50 dark:text-[var(--brand-sand)]/50">Upload a scan file to see detected configuration</p>
+                      </div>
+                    </div>
+
+                    {/* Empty Terminal Preview */}
+                    <div 
+                      className="bg-[var(--brand-ink)] dark:bg-black rounded-xl p-4 border"
+                      style={{ borderColor: borderColors.card }}
+                    >
+                      <div className="flex items-center gap-2 mb-3 pb-3 border-b" style={{ borderColor: borderColors.cardInner }}>
+                        <div className="flex gap-1.5">
+                          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <span className="ml-2 text-xs text-[var(--brand-sand)] font-mono">baseline-setup.sh</span>
+                      </div>
+                      <div className="font-mono text-sm space-y-1.5">
+                        <div className="text-[var(--brand-sunset)]">$ chmod +x baseline-setup.sh</div>
+                        <div className="text-[var(--brand-sunset)]">$ ./baseline-setup.sh</div>
+                        <div className="text-[var(--brand-sand)]/70"># Installing all your tools...</div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </section>
             )}
 
         </div>
