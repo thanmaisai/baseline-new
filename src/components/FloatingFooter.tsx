@@ -69,7 +69,7 @@ export const FloatingFooter = ({
   return (
     <div className="fixed bottom-8 left-0 right-0 z-50 flex justify-center px-4">
       <div
-        className="rounded-2xl py-3 px-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] flex items-center justify-between gap-6 border ring-1 ring-[var(--brand-sand)]/20 w-auto whitespace-nowrap backdrop-blur-xl"
+        className="rounded-2xl py-3 px-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] flex items-center justify-between gap-6 border ring-1 ring-white/10 w-auto whitespace-nowrap backdrop-blur-xl"
         style={shellStyles}
       >
 

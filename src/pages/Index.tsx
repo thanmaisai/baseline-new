@@ -6,6 +6,8 @@ import { PageLayout } from '@/components/PageLayout';
 import { FloatingFooter } from '@/components/FloatingFooter';
 import { TerminalWindow } from '@/components/TerminalWindow';
 import { useEffect } from 'react';
+import { themeTokens } from '@/theme/tokens';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const heroStats = [
   { label: 'Minutes to onboard', value: '5', detail: 'Average runtime' },
@@ -50,6 +52,14 @@ const terminalDemo = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+
+  // Get theme-aware border colors
+  const isDark = theme === 'dark';
+  const borderColors = {
+    card: themeTokens.colors[isDark ? 'dark' : 'light'].border.card,
+    cardInner: themeTokens.colors[isDark ? 'dark' : 'light'].border.cardInner,
+  };
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -79,7 +89,10 @@ const Index = () => {
             className="grid lg:grid-cols-[2fr,1fr] gap-10"
           >
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-[var(--brand-sand)]/80 dark:bg-[var(--brand-ink)]/80 text-xs font-bold uppercase tracking-[0.3em] px-4 py-2 rounded-full border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/20 text-[var(--brand-ink)] dark:text-[var(--brand-sand)]">
+              <div 
+                className="inline-flex items-center gap-2 bg-[var(--brand-sand)]/80 dark:bg-[var(--brand-ink)]/80 text-xs font-bold uppercase tracking-[0.3em] px-4 py-2 rounded-full border text-[var(--brand-ink)] dark:text-[var(--brand-sand)]"
+                style={{ borderColor: borderColors.cardInner }}
+              >
                 <span className="w-2 h-2 rounded-full bg-[var(--brand-sunset)]" />
                 Baseline / Mac Ops
               </div>
@@ -115,7 +128,11 @@ const Index = () => {
           </div>
               <div className="grid md:grid-cols-3 gap-6">
                 {heroStats.map((stat) => (
-                  <div key={stat.label} className="rounded-2xl border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/15 bg-[var(--brand-sand)]/70 dark:bg-[var(--brand-ink)]/70 p-4">
+                  <div 
+                    key={stat.label} 
+                    className="rounded-2xl border bg-[var(--brand-sand)]/70 dark:bg-[var(--brand-ink)]/70 p-4"
+                    style={{ borderColor: borderColors.card }}
+                  >
                     <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-1">{stat.label}</p>
                     <p className="text-3xl font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-sand)]">{stat.value}</p>
                     <p className="text-sm text-muted-foreground">{stat.detail}</p>
@@ -124,7 +141,10 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="rounded-[28px] border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/20 bg-[var(--brand-sand)]/85 dark:bg-[var(--brand-ink)]/80 p-6 flex flex-col justify-between">
+            <div 
+              className="rounded-[28px] border bg-[var(--brand-sand)]/85 dark:bg-[var(--brand-ink)]/80 p-6 flex flex-col justify-between"
+              style={{ borderColor: borderColors.card }}
+            >
               <div>
                 <div className="flex items-center gap-3 mb-6">
                   <img src="/brand/baseline-mark.png" alt="Baseline" className="w-12 h-12 rounded-2xl" />
@@ -159,7 +179,8 @@ const Index = () => {
               return (
                 <div
                   key={journey.id}
-                  className="rounded-3xl border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/15 bg-[var(--brand-sand)]/85 dark:bg-[var(--brand-ink)]/80 p-6 flex flex-col gap-6"
+                  className="rounded-3xl border bg-[var(--brand-sand)]/85 dark:bg-[var(--brand-ink)]/80 p-6 flex flex-col gap-6"
+                  style={{ borderColor: borderColors.card }}
                 >
                   <div className="flex items-center gap-3">
                     <span className="h-12 w-12 rounded-2xl bg-[var(--brand-sunset)]/20 flex items-center justify-center text-[var(--brand-ink)]">
@@ -174,7 +195,10 @@ const Index = () => {
                   <div className="space-y-3">
                     {journey.steps.map((step, index) => (
                       <div key={step} className="flex items-center gap-3 text-sm text-[var(--brand-ink)] dark:text-[var(--brand-sand)]">
-                        <span className="w-6 h-6 rounded-full border border-[var(--brand-ink)]/20 flex items-center justify-center text-xs font-semibold">
+                        <span 
+                          className="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-semibold"
+                          style={{ borderColor: borderColors.cardInner }}
+                        >
                           {index + 1}
                         </span>
                         {step}
@@ -198,7 +222,10 @@ const Index = () => {
       </section>
 
           <section className="grid lg:grid-cols-2 gap-10 items-start">
-            <div className="rounded-3xl border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/15 bg-[var(--brand-sand)] dark:bg-[var(--brand-ink)]/80 p-6 shadow-card">
+            <div 
+              className="rounded-3xl border bg-[var(--brand-sand)] dark:bg-[var(--brand-ink)]/80 p-6 shadow-card"
+              style={{ borderColor: borderColors.card }}
+            >
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">Live script</p>
                 <span className="inline-flex items-center text-xs font-bold tracking-widest text-[var(--brand-ink)] dark:text-[var(--brand-sand)]">
@@ -213,7 +240,8 @@ const Index = () => {
                 return (
                   <div
                     key={item.title}
-                    className="rounded-3xl border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/15 bg-[var(--brand-sand)]/80 dark:bg-[var(--brand-ink)]/70 p-6 flex gap-4"
+                    className="rounded-3xl border bg-[var(--brand-sand)]/80 dark:bg-[var(--brand-ink)]/70 p-6 flex gap-4"
+                    style={{ borderColor: borderColors.card }}
                   >
                     <span className="mt-1 h-12 w-12 rounded-2xl bg-[var(--brand-sunset)]/20 flex items-center justify-center">
                       <Icon className="w-6 h-6 text-[var(--brand-ink)] dark:text-[var(--brand-sand)]" />
@@ -225,7 +253,10 @@ const Index = () => {
             </div>
                 );
               })}
-              <div className="rounded-3xl border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/15 bg-[var(--brand-dunes)]/90 dark:bg-[var(--brand-ink)]/70 p-6">
+              <div 
+                className="rounded-3xl border bg-[var(--brand-dunes)]/90 dark:bg-[var(--brand-ink)]/70 p-6"
+                style={{ borderColor: borderColors.card }}
+              >
                 <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-2">Promise</p>
                 <p className="text-2xl font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-sand)]">
                   Five minutes of runway for every new hire. Same layout, same CTA, same confidence.
@@ -234,7 +265,10 @@ const Index = () => {
         </div>
       </section>
 
-          <section className="rounded-[32px] border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/15 bg-[var(--brand-sand)]/85 dark:bg-[var(--brand-ink)]/80 p-8">
+          <section 
+            className="rounded-[32px] border bg-[var(--brand-sand)]/85 dark:bg-[var(--brand-ink)]/80 p-8"
+            style={{ borderColor: borderColors.card }}
+          >
             <div className="flex flex-col lg:flex-row gap-8 items-start">
               <div className="flex-1 space-y-4">
                 <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">Playbook</p>
@@ -243,7 +277,10 @@ const Index = () => {
             </h2>
                 <p className="text-sm text-muted-foreground">— Head of Developer Productivity, Series B fintech</p>
               </div>
-              <div className="w-full lg:w-64 rounded-3xl border border-[var(--brand-dunes)]/60 dark:border-[var(--brand-sand)]/15 bg-[var(--brand-sand)]/80 dark:bg-[var(--brand-ink)]/60 p-6 space-y-3">
+              <div 
+                className="w-full lg:w-64 rounded-3xl border bg-[var(--brand-sand)]/80 dark:bg-[var(--brand-ink)]/60 p-6 space-y-3"
+                style={{ borderColor: borderColors.card }}
+              >
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-[var(--brand-ink)]" />
                   <div>
